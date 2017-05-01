@@ -29,7 +29,6 @@ img = img(:);
 
 
 [eigb_red,img_ave_red]= find_eigbird_red(15);
-a_train = projimage_train_red(eigb_red,img_ave_red);
 
 a_test = projimage(img,img_ave_red,eigb_red);
 
