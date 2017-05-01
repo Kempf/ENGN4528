@@ -1,6 +1,6 @@
 function [eigb_r,img_ave]= find_eigbird_red(k)
-trainpath = 'bird_train_image/redbird/';
-file = '*bird*.png';
+trainpath = 'images/train/red/';
+file = '*red*.png';
 train_filenames = dir([trainpath file]);
 num_train = size(train_filenames,1);
 img_mat = zeros(30*30, num_train);
@@ -41,9 +41,5 @@ eigb_r = eigb_r(:,1:k);
 %     j = j + 1;
 % end
 %%
-
-
-
-
 
 end
