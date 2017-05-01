@@ -1,8 +1,8 @@
 clc
 close all
 clear all
-testpath ='bird_test_image/';
-trainpath = 'bird_train_image/redbird/';
+testpath ='images/test/';
+trainpath = 'images/redbird/';
 filename = [testpath 'testimage5.png'];
 file = '*bird*.png';
 
@@ -30,7 +30,7 @@ img = img(:);
 
 [eigb_red,img_ave_red]= find_eigbird_red(15);
 
-a_test = projimage(img,img_ave_red,eigb_red);
+a_test = projimage(img,0,eigb_red);
 
 imshow(uint8(reshape(img_ave_red,[30,30])))
 
