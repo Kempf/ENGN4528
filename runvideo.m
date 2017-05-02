@@ -2,6 +2,8 @@ close all
 clear all
 clc
 
+fVid = figure('Name','Angry Birds');
+
 if ismac
     video = VideoReader('Angry Birds In-game Trailer-quicktime.mov');
     % Need this for me(Jae) to work on Macbook
@@ -10,8 +12,14 @@ else
     video = VideoReader('Angry Birds In-game Trailer.avi');
 end
 
+% video start and end
+%loop = [37 40]; % black birds
+%loop = [12 18]; % red birds
+%loop = [15 20]; % pigs 1
+loop = [25 28]; % pigs 2 
+%loop = [31 36]; % pigs 3
 
-video.CurrentTime = 37;
+video.CurrentTime = loop(1);
 toc_0 = 0;
 tic
 frame_count = 1;
@@ -24,10 +32,13 @@ win_size = [19,21];
 
 
 while hasFrame(video)
-    if video.CurrentTime >= 40
-        video.CurrentTime = 37;
+    if video.CurrentTime >= loop(2)
+        video.CurrentTime = loop(1);
     end
     
+    if ~ishghandle(fVid)
+        break
+    end
     
     frame = readFrame(video);
 %     subplot(1,2,1)
@@ -44,6 +55,10 @@ while hasFrame(video)
     
     frame_black_bird = CropColour(frame,[0,40,0,40,0,40]);
     [frame_black_bird,region_k] = Filter_Black(frame_black_bird);
+    
+    frame_pig = CropColour(frame,[100,150,200,230,30,90]);
+    [frame_pig,region_p] = Filter_Pig(frame_pig);
+    
 %     subplot(1,2,2)
 %     image(frame_black_bird*1000)
     %%
