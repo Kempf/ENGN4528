@@ -2,12 +2,18 @@ close all
 clear all
 clc
 
-video = VideoReader('Angry Birds In-game Trailer.avi');
+if ismac
+    video = VideoReader('Angry Birds In-game Trailer-quicktime.mov');
+else
+    video = VideoReader('Angry Birds In-game Trailer.avi');
+end
+
+
 video.CurrentTime = 11;
 toc_0 = 0;
 tic
 frame_count = 1;
-% 
+
 [eigb_red,img_ave_red] = find_eigbird_red(15);
 
 
