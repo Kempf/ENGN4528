@@ -11,7 +11,7 @@ else
 end
 
 
-video.CurrentTime = 37;
+video.CurrentTime = 36;
 toc_0 = 0;
 tic
 frame_count = 1;
@@ -32,9 +32,7 @@ while hasFrame(video)
     frame = readFrame(video);
 %     subplot(1,2,1)
     %%
-    frame(:,:,1) = medfilt2(frame(:,:,1),[5,5]);
-    frame(:,:,2) = medfilt2(frame(:,:,2),[5,5]);
-    frame(:,:,3) = medfilt2(frame(:,:,3),[5,5]);
+    frame(:,:,1) = mefilt2()
     image(frame)
     
     
@@ -42,14 +40,14 @@ while hasFrame(video)
     [frame_red_bird,region_r] = Filter(frame_red_bird);
     
     
-    frame_black_bird = CropColour(frame,[0,40,0,40,0,40]);
+    frame_black_bird = CropColour(frame,[0,20,0,20,0,20]);
     [frame_black_bird,region_k] = Filter_Black(frame_black_bird);
 %     subplot(1,2,2)
 %     image(frame_black_bird*1000)
     %%
-%     [centres,radii] = imfindcircles(frame,[5,15],'Sensitivity',0.958,'EdgeThreshold',0.3);
-%     viscircles(centres, radii,'EdgeColor','b');
-%     
+    [centres,radii] = imfindcircles(frame,[5,15],'Sensitivity',0.958,'EdgeThreshold',0.3);
+    viscircles(centres, radii,'EdgeColor','b');
+    
     
     
     

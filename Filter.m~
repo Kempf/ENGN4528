@@ -10,16 +10,21 @@ SE = strel('rectangle',[20,2]);
 % frame_out = imdilate(frame_out,SE);
 region  = regionprops(frame_out,'BoundingBox');
 
-if (size(region,1) ~= 0) && (size(region,1) < 5)
+
+if size(region,1) ~= 0
     for i = 1:size(region,1)
         area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-        if (area <= 600) && (area >= 30)     
+        if (area <= 900) && (area >= 200)
+        
             region(i).BoundingBox(1) = region(i).BoundingBox(1) - 3;
             region(i).BoundingBox(2) = region(i).BoundingBox(2) - 3;
-            region(i).BoundingBox(3) = region(i).BoundingBox(3) + 8;
-            region(i).BoundingBox(4) = region(i).BoundingBox(4) + 10;
-            rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','r','LineWidth',2);
-        end
+            region(i).BoundingBox(3) = region(i).BoundingBox(3) + 7;
+            region(i).BoundingBox(4) = region(i).BoundingBox(4) + 7;
+
+        
+        
+        rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','r','LineWidth',2);
+        
     end
 end
 end
