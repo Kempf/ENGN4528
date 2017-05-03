@@ -13,11 +13,12 @@ else
 end
 
 % video start and end
-%loop = [37 40]; % black birds
-%loop = [12 18]; % red birds
-%loop = [15 20]; % pigs 1
-loop = [25 28]; % pigs 2 
+% loop = [37 40]; % black birds
+% loop = [12 18]; % red birds
+% %loop = [15 20]; % pigs 1
+% loop = [25 28]; % pigs 2 
 %loop = [31 36]; % pigs 3
+loop = [1,40];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -41,30 +42,51 @@ while hasFrame(video)
     end
     
     frame = readFrame(video);
+    
 %     subplot(1,2,1)
-    %%
-    frame(:,:,1) = medfilt2(frame(:,:,1),[5,5]);
-    frame(:,:,2) = medfilt2(frame(:,:,2),[5,5]);
-    frame(:,:,3) = medfilt2(frame(:,:,3),[5,5]);
     image(frame)
+    %%
+    frame_med(:,:,1) = medfilt2(frame(:,:,1),[3,3]);
+    frame_med(:,:,2) = medfilt2(frame(:,:,2),[3,3]);
+    frame_med(:,:,3) = medfilt2(frame(:,:,3),[3,3]);
+
     
     
-    frame_red_bird = CropColour(frame,[180,220,0,30,30,70]);
-    [frame_red_bird,region_r] = Filter(frame_red_bird);
+    frame_red_bird = CropColour(frame_med,[140,220,0,30,30,70]);
+    frame_black_bird = CropColour(frame_med,[0,30,0,30,0,30]);
+    frame_pig = CropColour(frame_med,[100,150,200,230,30,90]);
+    
+    if sum(sum(frame_red_bird)) >= 5
+        [frame_red_bird,rec_r] = Filter(frame_red_bird);
+        coord_r = confirm_red_bird(frame,img_ave_red,eigb_red,rec_r);
+    end
+    
+
+    if sum(sum(frame_black_bird)) >= 5
+        [frame_black_bird,region_k] = Filter_Black(frame_black_bird);
+    end
+    
+    if sum(sum(frame_pig)) >= 5
+        [frame_pig,region_p] = Filter_Pig(frame_pig);
+    end
     
     
-    frame_black_bird = CropColour(frame,[0,40,0,40,0,40]);
-    [frame_black_bird,region_k] = Filter_Black(frame_black_bird);
     
-    frame_pig = CropColour(frame,[100,150,200,230,30,90]);
-    [frame_pig,region_p] = Filter_Pig(frame_pig);
+    
+    
+    
     
 %     subplot(1,2,2)
-%     image(frame_black_bird*1000)
-    %%
-%     [centres,radii] = imfindcircles(frame,[5,15],'Sensitivity',0.958,'EdgeThreshold',0.3);
+%     image(frame_pig*1000)
+%     %
+%     [centres,radii] = imfindcircles(frame,[10,14],'Sensitivity',0.95,'EdgeThreshold',0.3...
+%         ,'ObjectPolarity','dark');
 %     viscircles(centres, radii,'EdgeColor','b');
-%     
+%         [centres,radii] = imfindcircles(frame,[10,14],'Sensitivity',0.95,'EdgeThreshold',0.3...
+%         ,'ObjectPolarity','dark');
+
+    
+% %     
     
     
     
