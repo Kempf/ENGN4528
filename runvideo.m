@@ -18,7 +18,8 @@ end
 % %loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2 
 %loop = [31 36]; % pigs 3
-loop = [54,60];
+%loop = [54,60]; % ?
+loop = [29 32];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -56,6 +57,7 @@ while hasFrame(video)
     frame_red_bird = CropColour(frame_med,[140,220,0,30,30,70]);
     frame_black_bird = CropColour(frame_med,[0,30,0,30,0,30]);
     frame_pig = CropColour(frame_med,[100,150,200,230,30,90]);
+    frame_yellow = CropColour(frame_med,[200,255,200,255,30,150]);
     
     if sum(sum(frame_red_bird)) >= 5
         [frame_red_bird,rec_r] = Filter(frame_red_bird);
@@ -70,6 +72,10 @@ while hasFrame(video)
     
     if sum(sum(frame_pig)) >= 5
         [frame_pig,region_p] = Filter_Pig(frame_pig);
+    end  
+    
+    if sum(sum(frame_yellow)) >= 5
+        [frame_yellow,region_y] = Filter_Yellow(frame_yellow);
     end  
     
 %     subplot(1,2,2)
