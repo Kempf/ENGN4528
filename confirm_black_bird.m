@@ -4,7 +4,7 @@ if isempty(colour_detected_rec) == 0
         frame_w = frame(rec(2):rec(4)+rec(2),...
             rec(1):rec(3)+rec(1),:);
         dist = CalcDist_Red(frame_w,img_ave_black,eigb_black);
-        if dist < 2
+        if dist < 1.6
             rectangle('Position',rec+[-5,-5 10 10]','EdgeColor','cyan','LineWidth',2);
         else
             dist

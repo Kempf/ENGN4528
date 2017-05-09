@@ -18,7 +18,8 @@ end
 % %loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2 
 %loop = [31 36]; % pigs 3
-loop = [54,60];
+loop = [1,60];
+
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -27,12 +28,6 @@ frame_count = 1;
 
 [eigb_red,img_ave_red] = find_eigbird_red(15);
 [eigb_black,img_ave_black] = find_eigbird_black(15);
-
-
-
-
-% pause(3)
-
 
 while hasFrame(video)
     if video.CurrentTime >= loop(2)
@@ -45,16 +40,17 @@ while hasFrame(video)
     
     frame = readFrame(video);
     
-%     subplot(1,2,1)
-    image(frame)
+    subplot(1,2,1)
+    
     %%
     frame_med(:,:,1) = medfilt2(frame(:,:,1),[3,3]);
     frame_med(:,:,2) = medfilt2(frame(:,:,2),[3,3]);
     frame_med(:,:,3) = medfilt2(frame(:,:,3),[3,3]);
     
+    image(frame_med)
     
     frame_red_bird = CropColour(frame_med,[140,220,0,30,30,70]);
-    frame_black_bird = CropColour(frame_med,[0,30,0,30,0,30]);
+    frame_black_bird = CropColour(frame_med,[0,40,0,40,0,40]);
     frame_pig = CropColour(frame_med,[100,150,200,230,30,90]);
     
     if sum(sum(frame_red_bird)) >= 5
@@ -67,14 +63,15 @@ while hasFrame(video)
         [frame_black_bird,rec_k] = Filter_Black(frame_black_bird);
         coord_k = confirm_black_bird(frame,img_ave_black,eigb_black,rec_k);
     end
+
     
     if sum(sum(frame_pig)) >= 5
         [frame_pig,region_p] = Filter_Pig(frame_pig);
     end  
     
-%     subplot(1,2,2)
-%     image(frame_pig*1000)
-%     %
+
+    subplot(1,2,2)
+    image(frame_black_bird*1000)
     
     if frame_count == 10
         clc
