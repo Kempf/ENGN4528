@@ -5,5 +5,4 @@ function [frame_thre] = CropColour(frame,thre)
 
      frame_thre = R_thre & G_thre & B_thre;
 
-
 end

@@ -1,6 +1,6 @@
-function [eigb_r,img_ave]= find_eigbird_red(k)
-trainpath = 'images/train/red/';
-file = '*red*.png';
+function [eigb,img_ave]= find_eigbird(k)
+trainpath = 'images/train';
+file = '*bird*.png';
 train_filenames = dir([trainpath file]);
 num_train = size(train_filenames,1);
 img_mat = zeros(30*30, num_train);
@@ -25,21 +25,21 @@ eig_val = sum(eig_val,2);
 [~,ind] = sort(eig_val);
 ind = flipud(ind);
 % eig_val = eig_val(ind);
-eigb_r = u(:,ind);
+eigb = u(:,ind);
 
 % eig_val= eig_val(1:k);
-eigb_r = eigb_r(:,1:k);
+eigb = eigb(:,1:k);
 
-% Display the eigenfaces
-% figure()
-% j = 1;
-% for ef = eigb_r
-%     subplot(5,3,j)
-%     ef = reshape((256/2)+ef*30*30,[30,30]);
-%     imshow(uint8(ef))
+Display the eigenfaces
+figure()
+j = 1;
+for ef = eigb
+    subplot(5,3,j)
+    ef = reshape((256/2)+ef*30*30,[30,30]);
+    imshow(uint8(ef))
 %     title(num2str(j))
 %     j = j + 1;
-% end
+end
 %%
 
 end

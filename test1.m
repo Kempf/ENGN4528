@@ -2,8 +2,8 @@ clc
 close all
 clear all
 testpath ='images/test/';
-trainpath = 'images/redbird/';
-filename = [testpath 'testimage5.png'];
+trainpath = 'images/train/black/';
+filename = [testpath 'test_black1.png'];
 file = '*bird*.png';
 
 train_filenames = dir([trainpath file]);
@@ -28,15 +28,15 @@ tic
 img = img(:);
 
 
-[eigb_red,img_ave_red]= find_eigbird_red(15);
+[eigb,img_ave]= find_eigbird_black(15);
 
-a_test = projimage(img,0,eigb_red);
+a_test = projimage(img,img_ave,eigb);
 
-imshow(uint8(reshape(img_ave_red,[30,30])))
+imshow(uint8(reshape(img_ave,[30,30])))
 
 
-dist = double(img) - (img_ave_red + eigb_red*a_test);
-disp = norm(dist)/900
+dist = double(img) - (img_ave + eigb*a_test);
+dist = norm(dist)/900
 toc
 % i = 1;
 % num_train = size(a_train,2);

@@ -1,36 +1,27 @@
 %% finds blues - it's pretty bad
 function [frame_out,colour_detected_rec] = Filter_Blue(frame)
-SE = strel('rectangle',[5 5]);
+SE = strel('rectangle',[4,4]);
+frame_out = bwareafilt(frame,[10,inf]);
 frame_out = imclose(frame,SE);
-frame_out = bwareafilt(frame_out,[100,500]);
+
 
 region = regionprops(frame_out,'BoundingBox');
 colour_detected_rec = [];
-% if (size(region,1) ~= 0) && (size(region,1) < 6)
-    for i = 1:size(region,1)
-        area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-        if (area <= 400) && (area >= 100) &&(region(i).BoundingBox(3)<40)...
-                &&(region(i).BoundingBox(4)<40)
-            region(i).BoundingBox = region(i).BoundingBox + [-3,-3,5,5];
-            rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','b','LineWidth',4);
-            colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
-%         else
-%             clc
-%             disp('No Rectangle')
-%             fprintf('AREA: %d \n',area)
-%             fprintf('x width: %d \n',region(i).BoundingBox(3))
-%             fprintf('y width: %d \n',region(i).BoundingBox(4))
-%             fprintf('y/x: %.3f \n',region(i).BoundingBox(4)/region(i).BoundingBox(3))
-%             fprintf('x/y: %.3f \n',region(i).BoundingBox(3)/region(i).BoundingBox(4))
-%             pause(2)
-%             
-%             
-%             
-        end
-        
-    end
-    
-% end
 
+for i = 1:size(region,1)
+    area = region(i).BoundingBox(3)*region(i).BoundingBox(4);
+    region(i).BoundingBox = region(i).BoundingBox + [-5,-3,10,5];
+    if (region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 2.5 &&...
+        (region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 2.5&&...
+        (area > 10) && (area<300)
+    
+        
+        
+        rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','b','LineWidth',2);
+        colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
+    end
+end
+
+colour_detected_rec = round(colour_detected_rec);
 
 end

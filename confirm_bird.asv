@@ -1,0 +1,5 @@
+function obj = confirm_bird(obj,bird_prev)
+    
+
+
+end
