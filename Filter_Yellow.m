@@ -1,16 +1,20 @@
 function [frame_out,colour_detected_rec] = Filter_Yellow(frame)
 
-SE = strel('rectangle',[5 5]);
+SE = strel('rectangle',[8 5]);
 frame_out = imclose(frame,SE);
-frame_out = bwareafilt(frame_out,[100,500]);
+frame_out = bwareafilt(frame_out,[50,500]);
 
 region = regionprops(frame_out,'BoundingBox');
 colour_detected_rec = [];
 % if (size(region,1) ~= 0) && (size(region,1) < 6)
     for i = 1:size(region,1)
         area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-        if (area <= 900) && (area >= 100) &&(region(i).BoundingBox(3)<40)...
-                &&(region(i).BoundingBox(4)<40)
+        if (area <= 900) && (area >= 50) &&...
+            ((region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 1.4)&&...
+            ((region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 1.4)&&...
+            (region(i).BoundingBox(1) >= 10) && (region(i).BoundingBox(2) >= 10)&&...
+            (region(i).BoundingBox(1)+region(i).BoundingBox(3) <= 670)
+
             region(i).BoundingBox = region(i).BoundingBox + [-3,-3,5,5];
             rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','y','LineWidth',4);
             colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
