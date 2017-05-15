@@ -2,7 +2,8 @@ function [eigb,img_ave]= find_eigbird(k)
 trainpath = 'images/train/';
 file = '*b*.png';
 train_filenames = dir([trainpath file]);
-num_train = size(train_filenames,1)
+num_train = size(train_filenames,1);
+fprintf('Training images: %d\n',num_train);
 img_mat = zeros(30*30, num_train);
 for i = 1:num_train
     filename = [trainpath train_filenames(i).name];
