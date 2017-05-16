@@ -1,0 +1,1 @@
+function [bird_k,bird_r,slingshot] = init_launch(bird_k,bird_r,slingshot)

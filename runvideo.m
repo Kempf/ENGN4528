@@ -31,11 +31,16 @@ frame_count = 1;
 bird_k_prev.coord = [];
 bird_k_prev.init_t = [];
 bird_k_prev.valid = [];
+bird_k_prev.wcoord = []; % world coord of black birds
+bird_k_prev.status = []; % status of black birds, 0:waiting, 1:flying
+bird_k_prev.para = []; % predicted parabolic
 
 bird_r_prev.coord = [];
 bird_r_prev.init_t = [];
 bird_r_prev.valid = [];
-
+bird_r_prev.wcoord = [];
+bird_r_prev.status = []; % status of birds, 0:waiting, 1:flying
+bird_r_prev.para = []; % predicted parabolic
 
 while hasFrame(video)
     if video.CurrentTime >= loop(2)
@@ -106,7 +111,14 @@ while hasFrame(video)
         frame_per_sec = 1/time_per_frame
         toc_0 = toc_1;
     end
+    %% Tony is testing this part
+    [bird_k,bird_r,slingshot] = status_init(bird_k,bird_r,slingshot)
+    [bird_k,bird_r,slingshot] = init_launch(bird_k,bird_r,slingshot)
+    [bird_k,bird_r,slingshot] = world_coord_conversion(bird_k,bird_r,slingshot)
+    bird_launched = find_launched_bird(bird_k, bird_r,bird_k_prev, bird_r_prev, slingshot);
+    y = trajectory(x,frame_count);
     
+    %%    
     frame_count = frame_count + 1;
     drawnow
 end
