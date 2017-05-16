@@ -1,8 +1,8 @@
 %% finds blues - it's pretty bad
 function [frame_out,colour_detected_rec] = Filter_Blue(frame)
 SE = strel('rectangle',[4,4]);
-frame_out = bwareafilt(frame,[10,inf]);
 frame_out = imclose(frame,SE);
+frame_out = bwareafilt(frame,[10,inf]);
 
 
 region = regionprops(frame_out,'BoundingBox');
