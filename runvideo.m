@@ -20,9 +20,9 @@ clc_str = '';
 % select which detection algorithms to run
 en_red = 0;
 en_black = 0;
-en_blue = 1; % needs PCA - false matches
+en_blue = 0; % ok
 en_yellow = 0; % pretty good
-en_white = 0; % needs PCA and thresh adjust - false matches
+en_white = 1; % ok
 en_pig = 1; % works well
 en_sling = 1; % some false matches (see blue bird loop)
 
@@ -32,10 +32,11 @@ en_sling = 1; % some false matches (see blue bird loop)
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
-loop = [22 28]; % blue bird
+% loop = [46 48]; % pigs 4
+% loop = [22 28]; % blue bird
 % loop = [12 60]; % whole video
 % loop = [29 31]; % yellow
-% loop = [45 48]; % white
+loop = [45 48]; % white
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -79,7 +80,7 @@ while hasFrame(video)
     % color threshold objects
     frame_red_bird = CropColour(frame_r,[255,255,0,0,30,70]);
     frame_black_bird = CropColour(frame_k,[0,0,0,0,0,0]);
-    frame_pig = CropColour(frame_g,[100,150,255,255,0,120]);
+    frame_pig = CropColour(frame_g,[100,150,255,255,0,100]);
     frame_blue_bird = CropColour(frame_b,[160,190,140,210,255,255]);
     frame_yellow_bird = CropColour(frame_y,[255,255,255,255,20,100]);
     frame_white_bird = CropColour(frame_w,[255,255,255,255,255,255]);
@@ -87,7 +88,7 @@ while hasFrame(video)
     
     % draw frame
     subplot(1,2,1)
-    image(frame_b)
+    image(frame_g)
     
     % red birds
     if (sum(sum(frame_red_bird)) >= 5) && (en_red)
@@ -108,7 +109,7 @@ while hasFrame(video)
     end
     % detect pigs
     if (sum(sum(frame_pig)) >= 5) && (en_pig)
-        [frame_pig,region_p] = Filter_Pig(frame_pig);
+        [frame_pig,region_p] = Filter_Pig(frame_pig,frame_g);
         subplot(1,2,2)
         image(frame_pig*1000)
         subplot(1,2,1)
@@ -129,7 +130,7 @@ while hasFrame(video)
     end
     % detect white bird
     if (sum(sum(frame_white_bird)) >= 5) && (en_white)
-        [frame_white_bird,rec_b] = Filter_White(frame_white_bird);
+        [frame_white_bird,rec_b] = Filter_White(frame_white_bird,frame_w);
         subplot(1,2,2)
         image(frame_white_bird*1000)
         subplot(1,2,1)

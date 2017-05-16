@@ -19,6 +19,7 @@ for i = 1:size(region,1)
         % second color filter
         window = CropColour(imcrop(rgbframe,region(i).BoundingBox),[200,255,120,200,0,0]);
         if sum(window(:)) >= 3
+            %region(i).BoundingBox = region(i).BoundingBox + [-3,-3,5,5];
             rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','b','LineWidth',2);
             colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
         end
