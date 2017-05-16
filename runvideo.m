@@ -20,9 +20,9 @@ clc_str = '';
 % select which detection algorithms to run
 en_red = 0;
 en_black = 0;
-en_blue = 0; % needs PCA - false matches
+en_blue = 1; % needs PCA - false matches
 en_yellow = 0; % pretty good
-en_white = 1; % needs PCA and thresh adjust - false matches
+en_white = 0; % needs PCA and thresh adjust - false matches
 en_pig = 1; % works well
 en_sling = 1; % some false matches (see blue bird loop)
 
@@ -32,10 +32,10 @@ en_sling = 1; % some false matches (see blue bird loop)
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
-% loop = [22 28]; % blue bird
+loop = [22 28]; % blue bird
 % loop = [12 60]; % whole video
 % loop = [29 31]; % yellow
-loop = [45 48]; % white
+% loop = [45 48]; % white
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -87,7 +87,7 @@ while hasFrame(video)
     
     % draw frame
     subplot(1,2,1)
-    image(frame_w)
+    image(frame_b)
     
     % red birds
     if (sum(sum(frame_red_bird)) >= 5) && (en_red)
@@ -115,7 +115,7 @@ while hasFrame(video)
     end
     % detect blue birds
     if (sum(sum(frame_blue_bird)) >= 5) && (en_blue)
-        [frame_blue_bird,rec_b] = Filter_Blue(frame_blue_bird);
+        [frame_blue_bird,rec_b] = Filter_Blue(frame_blue_bird,frame_b);
         subplot(1,2,2)
         image(frame_blue_bird*1000)
         subplot(1,2,1)
