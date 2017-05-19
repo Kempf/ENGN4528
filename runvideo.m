@@ -20,11 +20,11 @@ clc_str = '';
 % select which detection algorithms to run
 en_red = 0;
 en_black = 0;
-en_blue = 0; % ok
+en_blue = 1; % ok
 en_yellow = 0; % pretty good
-en_white = 1; % ok
-en_pig = 1; % works well
-en_sling = 1; % some false matches (see blue bird loop)
+en_white = 0; % ok
+en_pig = 0; % works well
+en_sling = 0; % some false matches (see blue bird loop)
 
 % video start and end
 % loop = [37 40]; % black birds
@@ -34,9 +34,9 @@ en_sling = 1; % some false matches (see blue bird loop)
 % loop = [31 36]; % pigs 3
 % loop = [46 48]; % pigs 4
 % loop = [22 28]; % blue bird
-% loop = [12 60]; % whole video
+ loop = [12 60]; % whole video
 % loop = [29 31]; % yellow
-loop = [45 48]; % white
+% loop = [45 48]; % white
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -54,6 +54,8 @@ bird_r_prev.coord = [];
 bird_r_prev.init_t = [];
 bird_r_prev.valid = [];
 
+frame_old=readFrame(video);
+
 while hasFrame(video)
     % video loop conditions
     if video.CurrentTime >= loop(2)
@@ -64,7 +66,6 @@ while hasFrame(video)
     if ~ishghandle(fVid)
         break
     end
-    
     frame = readFrame(video);
     %     frame(:,:,1) = medfilt2(frame(:,:,1),[3,3]);
     %     frame(:,:,2) = medfilt2(frame(:,:,2),[3,3]);
@@ -140,17 +141,26 @@ while hasFrame(video)
         [frame_slingshot,rec_s] = Filter_Slingshot(frame_slingshot);
     end
     
-    % fps counter
+    % fps counter and x,y coordinate shift
     if frame_count == 10
         frame_count = 1;
         toc_1 = toc;
         time_per_frame = (toc_1 - toc_0)/10;
         frame_per_sec = 1/time_per_frame;
-        msg = sprintf('FPS: %.1f\n', frame_per_sec);
+        %msg1 = sprintf('FPS: %.1f\n', frame_per_sec);
+        %fprintf([clc_str, msg]);
+        %clc_str = repmat(sprintf('\b'), 1, length(msg));
+        toc_0 = toc_1;
+        
+        [x,y,d]=coordinate_shift(frame_old,frame);
+        msg = sprintf('FPS: %.1f\n x shift= %.1f\n y shift= %.1f\n difference= %.1f\n',frame_per_sec, x,y,d);
         fprintf([clc_str, msg]);
         clc_str = repmat(sprintf('\b'), 1, length(msg));
-        toc_0 = toc_1;
     end
+    
+    
+    
+    frame_old=frame;
     
     frame_count = frame_count + 1;
     drawnow

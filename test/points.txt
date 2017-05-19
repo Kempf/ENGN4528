@@ -1,0 +1,3 @@
+origin point: base point of the slingshot. slingshot detection->bottom line 
+scale change. 
+birds coordinate change<-background coordinate change(scale,pixel shift, window center = constant), birds change(background pixel change,window center = boundingbox center)
