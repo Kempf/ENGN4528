@@ -100,34 +100,34 @@ while hasFrame(video)
     if (sum(sum(frame_black_bird)) >= 5) && (en_black)
         [frame_black_bird,rec_k] = Filter_Black(frame_black_bird);
     end
-%     % detect pigs
-%     if (sum(sum(frame_pig)) >= 5) && (en_pig)
-%         [frame_pig,region_p] = Filter_Pig(frame_pig,frame_g);
-% 
-%     end
-%     % detect blue birds
-%     if (sum(sum(frame_blue_bird)) >= 5) && (en_blue)
-%         [frame_blue_bird,rec_b] = Filter_Blue(frame_blue_bird,frame_b);
-% 
-%     end
-%     % detect yellow bird
-%     if (sum(sum(frame_yellow_bird)) >= 5) && (en_yellow)
-%         [frame_yellow_bird,rec_b] = Filter_Yellow(frame_yellow_bird);
-% 
-%     end
-%     % detect white bird
-%     if (sum(sum(frame_white_bird)) >= 5) && (en_white)
-%         [frame_white_bird,rec_b] = Filter_White(frame_white_bird,frame_w);
-% 
-%     end
-%     % detect slingshot
-%     if (sum(sum(frame_slingshot)) >= 5) && (en_sling)
-%         [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame_slingshot);
-%     end
+    % detect pigs
+    if (sum(sum(frame_pig)) >= 5) && (en_pig)
+        [frame_pig,region_p] = Filter_Pig(frame_pig,frame_g);
+
+    end
+    % detect blue birds
+    if (sum(sum(frame_blue_bird)) >= 5) && (en_blue)
+        [frame_blue_bird,rec_b] = Filter_Blue(frame_blue_bird,frame_b);
+
+    end
+    % detect yellow bird
+    if (sum(sum(frame_yellow_bird)) >= 5) && (en_yellow)
+        [frame_yellow_bird,rec_b] = Filter_Yellow(frame_yellow_bird);
+
+    end
+    % detect white bird
+    if (sum(sum(frame_white_bird)) >= 5) && (en_white)
+        [frame_white_bird,rec_b] = Filter_White(frame_white_bird,frame_w);
+
+    end
+    % detect slingshot
+    if (sum(sum(frame_slingshot)) >= 5) && (en_sling)
+        [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame_slingshot);
+    end
 %     
 % 
 %     
-%     velocity = OpticsBackground(frame_prev,frame);
+    velocity = OpticsBackground(frame_prev,frame,1)
 %     
 %     
     drawnow
@@ -150,4 +150,8 @@ while hasFrame(video)
         clc_str = repmat(sprintf('\b'), 1, length(msg));
         toc_0 = toc_1;
     end
+    
+    frame_prev = frame; 
+    
+    
 end

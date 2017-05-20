@@ -1,4 +1,4 @@
-function velocity = OpticsBackground(frame_prev,frame)
+function velocity = OpticsBackground(frame_prev,frame,scale)
     frame_py = impyramid(frame,'reduce');
     frame_py_prev = impyramid(frame_prev,'reduce');
     C = corner(rgb2gray(frame_py(40:150,100:200,:)),10);
@@ -15,7 +15,7 @@ function velocity = OpticsBackground(frame_prev,frame)
             A = [Ix Iy];
             B = A'*A;
             R = A'*b;
-            d = 2*((inv(B)*R)');
+            d = scale*2*((inv(B)*R)');
             d_list = [d_list;d];
      end
         velocity = sum(d_list,1)/size(C,1);

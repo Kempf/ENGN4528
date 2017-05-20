@@ -9,8 +9,8 @@ frame_out = bwareafilt(frame,[5,1000]);
 region = regionprops(frame,'BoundingBox');
 colour_detected_rec = [];
 
-figure(2)
-image(frame_out*1000)
+% figure(2)
+% image(frame_out*1000)
 
 for i = 1:size(region,1)
     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
