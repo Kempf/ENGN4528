@@ -3,20 +3,23 @@ function [frame_out,colour_detected_rec] = Filter_Black(frame)
 SE = strel('disk',4);
 
 frame= imopen(frame,SE);
-frame = bwareafilt(frame,[90,600]);
+frame_out = bwareafilt(frame,[5,1000]);
 
 
 region = regionprops(frame,'BoundingBox');
 colour_detected_rec = [];
-frame_out = frame;
+
+figure(2)
+image(frame_out*1000)
 
 for i = 1:size(region,1)
     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-    if (area <= 1000) && (area >= 200) &&...
+    if (area <= 1000) && (area >= 10) &&...
               ((region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 1.5) &&...
               ((region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 1.5)
             
-        region(i).BoundingBox = region(i).BoundingBox + [-4,-6,8,6];
+        region(i).BoundingBox = 2 * region(i).BoundingBox + [-4,-6,8,6];
+        figure(1)
         rectangle('Position',region(i).BoundingBox,'EdgeColor','k','LineWidth',2);
         
         x = region(i).BoundingBox(1);
