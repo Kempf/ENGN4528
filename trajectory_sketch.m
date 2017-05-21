@@ -21,6 +21,12 @@ if sum(isnan(coord_store)) == 0
     y = coord_store(2,:);
     para_traj = polyfit(x,y,2);
 end
+
+pix_x = 0:1:birds(x);
+pix_y = para_traj(1)*pix_x^2+para_traj(2)*pix_x+para_traj(3);
+plot(pix_x,pix_y,'k');
+drawnow;
+
 end
     
     
