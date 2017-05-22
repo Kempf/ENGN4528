@@ -1,52 +1,32 @@
-function [frame_out,colour_detected_rec] = Filter_Black(frame)
+function [coord,colour_detected_rec,rec_drawn] = Filter_Black(frame_py)
+%pre-process
+frame_ad = imadjust(frame_py,[.499 .499 .499; .501 .501 .501],[]);
+frame = CropColour(frame_ad,[0,0,0,0,0,0]);
 
-SE = strel('disk',4);
+SE = strel('disk',3);
 
-frame= imopen(frame,SE);
-frame_out = bwareafilt(frame,[5,1000]);
+frame= imclose(frame,SE);
+BW = bwareafilt(frame,[40,200]);
 
-
-region = regionprops(frame,'BoundingBox');
+region = regionprops(BW,'BoundingBox');
 colour_detected_rec = [];
-
-% figure(2)
-% image(frame_out*1000)
+coord = [];
+colour_detected_rec = [];
+rec_drawn = [];
 
 for i = 1:size(region,1)
-    area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-    if (area <= 1000) && (area >= 10) &&...
-              ((region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 1.5) &&...
-              ((region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 1.5)
-            
-        region(i).BoundingBox = 2 * region(i).BoundingBox + [-4,-6,8,6];
+%     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
+%     if (area <= 2500) && (area >= 4) &&...
+%               ((region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 1.5) &&...
+%               ((region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 1.5)
+        region(i).BoundingBox = 2*(region(i).BoundingBox);
+        coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
         figure(1)
-        rectangle('Position',region(i).BoundingBox,'EdgeColor','k','LineWidth',2);
-        
-        x = region(i).BoundingBox(1);
-        y = region(i).BoundingBox(2);
-        w = region(i).BoundingBox(3);
-        h = region(i).BoundingBox(4);
-%         
-        if x < 1
-            x = 1;
-        end
-        
-        if y < 1
-            y = 1;
-        end
-        
-        if x+w >= 480
-            w  = 480-x-1;
-            
-        end
-        
-        if y+h >= 320
-            h = 320-y-1;
-        end
-        region(i).BoundingBox = [x,y,w,h];
+        rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','k','LineWidth',2);
+        plot(coord(:,1),coord(:,2),'r*');
         colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
-    end
+%     end;
 end
-
 colour_detected_rec = round(colour_detected_rec);
 end
