@@ -55,9 +55,14 @@ frame_count = 1;
 % bird_r_prev.init_t = [];
 % bird_r_prev.valid = [];
 % bird_r_prev.status = [];
-frame_prev = readFrame(video);
-coord_store = NaN(2,3);
-para_traj = NaN(1,3);
+frame_prev = readFrame(video); 
+coord_store = NaN(2,3); % store the coordinates to sketch the parabolic curves
+para_traj = NaN(1,3); % parabolic trajectory of each frame
+init_trajectory = NaN(1,3); % initialized trajectory( trajectory used to calculate the world coordnates)
+init_frame = NaN; % the frame which the bird is launched
+frame_number = 1; % current frame number
+Vx = NaN; % velocity in x direction
+world_coord = [NaN,NaN]; %world coordnate system
 while hasFrame(video)
     
     % video loop conditions
@@ -159,6 +164,6 @@ while hasFrame(video)
     end
     
     frame_prev = frame; 
-    
+    frame_number = frame_number + 1;
     
 end
