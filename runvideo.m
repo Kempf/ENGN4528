@@ -43,26 +43,13 @@ toc_0 = 0;
 tic
 frame_count = 1;
 
-<<<<<<< HEAD
 frame_prev = readFrame(video);
 
 %jrajectory
 coord_store = NaN(2,3);
 para_traj = NaN(1,3);
 
-=======
-% load eigenbirds
-[eigb,img_ave] = find_eigbird(15);
-% [eigb_black,img_ave_black] = find_eigbird_black(15);
-% bird_k_prev.coord = [];
-% bird_k_prev.init_t = [];
-% bird_k_prev.valid = [];
-% bird_k_prev.status = [];
-% 
-% bird_r_prev.coord = [];
-% bird_r_prev.init_t = [];
-% bird_r_prev.valid = [];
-% bird_r_prev.status = [];
+
 frame_prev = readFrame(video); 
 coord_store = NaN(2,3); % store the coordinates to sketch the parabolic curves
 para_traj = NaN(1,3); % parabolic trajectory of each frame
@@ -71,7 +58,7 @@ init_frame = NaN; % the frame which the bird is launched
 frame_number = 1; % current frame number
 Vx = NaN; % velocity in x direction
 world_coord = [NaN,NaN]; %world coordnate system
->>>>>>> refs/remotes/origin/master
+
 while hasFrame(video)
     
     % video loop conditions
