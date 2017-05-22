@@ -1,15 +1,15 @@
 function [coord_store,para_traj] = trajectory_sketch(frame_count,birds)
 
-if mod(frame_count,6) == 0
-    coord_store = NaN(2,3);
+if mod(frame_count,3) == 0
+%     coord_store = NaN(2,3);
     coord_store(1,1) = birds(x);
     coord_store(1,2) = birds(y);
 else 
-    if mod(frame_count,6) == 1
+    if mod(frame_count,3) == 1
         coord_store(2,1) = birds(x);
         coord_store(2,2) = birds(y);
     else 
-        if mod(frame_count,6) == 2
+        if mod(frame_count,3) == 2
             coord_store(3,1) = birds(x);
             coord_store(3,2) = birds(y);
         end
