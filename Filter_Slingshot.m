@@ -1,22 +1,27 @@
-function [coord,colour_detected_rec,rec_drawn] = Filter_Slingshot(frame_py)
-
-%pre-process
-frame = CropColour(frame_py,[120,190,70,160,37,100]);
-
-SE = strel('rectangle',[15,1]);
-frame = imclose(frame,SE);
-BW= bwareafilt(frame,[25,2500]);
-
-region = regionprops(BW,'BoundingBox');
+function [coord,colour_detected_rec,rec_drawn] = Filter_Slingshot(frame)
 coord = [];
 colour_detected_rec = [];
 rec_drawn = [];
+%pre-process
+frame = CropColour(frame,[120,190,70,160,37,100]);
+
+if sum(frame(:)) < 10
+    return
+end
+
+frame = imclose(frame,strel('rectangle',[15,1]));
+% figure(2)
+% image(frame*1000)
+BW= bwareafilt(frame,[25,2500]);
+
+region = regionprops(BW,'BoundingBox');
+
 
 for i = 1:size(region,1)
-    region(i).BoundingBox = 2*(region(i).BoundingBox);
-    if (region(i).BoundingBox(4)/region(i).BoundingBox(3)) > 2.4 &&...
-            (region(i).BoundingBox(4)/region(i).BoundingBox(3))<3.5&&...
-            region(i).BoundingBox(4) <150
+    area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
+    if  (region(i).BoundingBox(4)/region(i).BoundingBox(3)) > 2.4 &&...
+            area > 1500 
+       
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
             region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
         figure(1)
