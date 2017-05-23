@@ -142,7 +142,7 @@ while hasFrame(video)
     
 %     % black birds
     if en_black
-        [black_coord,rec_k,rec_drawn_k] = Filter_Black(frame_py);
+        [black_coord,rec_k,rec_drawn_k] = Filter_Black(frame);
     end
     
     %no detection 
