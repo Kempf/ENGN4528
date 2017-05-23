@@ -30,7 +30,7 @@ en_sling = 1;
  loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
 % loop = [22 28]; % blue birds
-% loop = [29 31]; % yellow birds
+% loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
@@ -43,7 +43,7 @@ en_sling = 1;
 det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
 det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
 	zeros(1,6)];
-sling = [12 15; 22 24; 29 30; 37 38; 45 47; 56 57];
+sling = [12 15; 22 24; 28 30; 37 38; 45 47; 56 57];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
