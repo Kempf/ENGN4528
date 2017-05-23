@@ -43,6 +43,7 @@ en_sling = 1;
 det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
 det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
 	zeros(1,6)];
+sling = [12 15; 22 24; 29 30; 37 38; 45 47; 56 57];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -83,6 +84,20 @@ while hasFrame(video)
 		end
 	end
     
+	sling_det = zeros(size(sling,1),1);
+	for k=1:size(sling,1)
+		if(video.CurrentTime >= sling(k,1) &&...
+			video.CurrentTime <= sling(k,2))
+			
+			sling_det(k) = 1;
+		end
+	end
+	if(any(sling_det))
+		en_sling = 1;
+	else
+		en_sling = 0;
+	end
+	
 	en_pig = det_cont(4,1);
 	en_red = det_cont(4,2);
 	en_blue = det_cont(4,3);
@@ -99,21 +114,6 @@ while hasFrame(video)
 
 %    % scale frame by 1/2 in order to process quicker
     frame_py = impyramid(frame,'reduce');
-%     frame_r = imadjust(frame_py,[.499 0.2 0; .501 .8 1],[]);
-%     frame_k = imadjust(frame_py,[.499 .499 .499; .501 .501 .501],[]);
-%     frame_g = imadjust(frame_py,[ 0 .499 0.2; 1 .501 0.8],[]);
-%     frame_b = imadjust(frame_py,[ 0 0 .499; 0.7 0.5 .501],[]);
-%     frame_y = imadjust(frame_py,[ 0 0 0; 0.8 0.7 1],[]);
-%     frame_w = imadjust(frame_py,[ 0 0 0; 0.8 0.8 0.7],[]);
-          
-%     % color threshold objects
-%     frame_red_bird = CropColour(frame_r,[255,255,0,0,30,70]);
-%     frame_blue_bird = CropColour(frame_b,[100,175,255,255,255,255]);
-%     frame_black_bird = CropColour(frame_k,[0,0,0,0,0,0]);
-%     frame_pig = CropColour(frame_g,[100,150,255,255,0,100]);
-%     frame_yellow_bird = CropColour(frame_y,[255,255,255,255,20,100]);
-%     frame_white_bird = CropColour(frame_w,[255,255,255,255,255,255]);
-%     frame_slingshot = CropColour(frame,[120,190,70,160,37,100]);
 %     
     figure(1)
 %     % draw frame
@@ -155,25 +155,12 @@ while hasFrame(video)
     if en_pig
         [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame);
     end
-%     
-%   
-%     
-     velocity = OpticsBackground(frame_prev,frame,1);
-%     
-%     
-%
-    
+  
+    velocity = OpticsBackground(frame_prev,frame,1);
 
     drawnow
-%     frame_prev = frame;
-%     delete(rec_drawn_r)
-%     delete(rec_drawn_s)
-%     delete(frame_obj)
-%     
-%     
-%     
-%         % fps counter
-        frame_count = frame_count + 1;
+    % fps counter
+	frame_count = frame_count + 1;
     if frame_count == 10
         frame_count = 1;
         toc_1 = toc;
