@@ -1,12 +1,10 @@
-function [coord,colour_detected_rec,rec_drawn] = Filter_Red(frame_py)
-%pre-process
-% frame_py(:,:,1) = medfilt2(frame_py(:,:,1), [2 2]);
-% frame_py(:,:,2) = medfilt2(frame_py(:,:,2), [2 2]);
-% frame_py(:,:,3) = medfilt2(frame_py(:,:,3), [2 2]);
+function [coord,colour_detected_rec,rec_drawn] = Filter_Red(frame)
 
-
-frame_ad = imadjust(frame_py,[.499 0.2 0; .501 .8 1],[]);
+frame_ad = imadjust(frame,[.499 0.2 0; .501 .8 1],[]);
 BW = CropColour(frame_ad,[255,255,0,0,30,70]);
+
+
+
 coord = [];
 colour_detected_rec = [];
 rec_drawn = [];
@@ -14,7 +12,7 @@ if sum(BW(:)) < 5
     return
 end
 
-frame_yellow = imadjust(frame_py,[ 0.45 0.45 0.45; 0.55 0.55 0.55],[]);
+frame_yellow = imadjust(frame,[ 0.45 0.45 0.45; 0.55 0.55 0.55],[]);
 
 
 
@@ -33,19 +31,17 @@ region  = regionprops(BW,'BoundingBox');
 
 for i = 1:size(region,1)
     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-    if (region(i).BoundingBox(4)/region(i).BoundingBox(3)) < 1.4 &&...
-            (region(i).BoundingBox(4)/region(i).BoundingBox(3))>(1/1.4) &&...
-            (area < 500) && (area > 100 )
+    if (area < 500) && (area > 1 )
 
-        region(i).BoundingBox = round((region(i).BoundingBox) + (area/90).*[-2,-2,4,4]);
-        ic = imcrop(frame_yellow,region(i).BoundingBox);
-        window = CropColour(ic,[255,255,80,255,0,170]);
+        region(i).BoundingBox = round((region(i).BoundingBox) + (area/90).*[-2,-2,4,6]);
+%         ic = imcrop(frame_yellow,region(i).BoundingBox);
+%         window = CropColour(ic,[255,255,80,255,0,170]);
 %         figure(3)
 %         image(ic)
-
-        if sum(window(:)) < 6
-            continue
-        end
+% 
+%         if sum(window(:)) < 6
+%             continue
+%         end
 
 %         region(i).BoundingBox = 2*region(i).BoundingBox;
         
