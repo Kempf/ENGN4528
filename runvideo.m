@@ -32,11 +32,17 @@ en_sling = 1;
 % loop = [22 28]; % blue birds
 % loop = [29 31]; % yellow birds
 % loop = [37 40]; % black birds
- loop = [45 48]; % white bird
+% loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
 % loop = [46 48]; % pigs 4
+
+% detection control 
+%              pig 	  red	  	blue   	 yellow   black   white	
+det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
+det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
+	zeros(1,6)];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -65,7 +71,25 @@ while hasFrame(video)
     if video.CurrentTime >= loop(2)
         video.CurrentTime = loop(1);
     end
+	
+	for k=1:6
+		if(video.CurrentTime >= det_cont(1,k) &&...
+			video.CurrentTime <= det_cont(2,k) &&...
+			det_cont(3,k))
+			
+			det_cont(4,k) = 1;
+		else
+			det_cont(4,k) = 0;
+		end
+	end
     
+	en_pig = det_cont(4,1);
+	en_red = det_cont(4,2);
+	en_blue = det_cont(4,3);
+	en_yellow = det_cont(4,4);
+	en_black = det_cont(4,5);
+	en_white = det_cont(4,6);
+	
     % exit if video window is closed
     if ~ishghandle(fVid)
         break
@@ -98,12 +122,12 @@ while hasFrame(video)
     
     % detect slingshot
     if en_sling
-        [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame_py);
+        [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame);
     end
     
 %     % detect red birds
     if  en_red
-        [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame_py);
+        [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame);
     end
     
 %     % detect blue birds
@@ -113,7 +137,7 @@ while hasFrame(video)
     
     % detect yellow bird
     if en_yellow
-        [yellow_coord,rec_y,rec_drawn_y] = Filter_Yellow(frame_py);
+        [yellow_coord,rec_y,rec_drawn_y] = Filter_Yellow(frame);
     end
     
 %     % black birds
@@ -129,7 +153,7 @@ while hasFrame(video)
     
 %    % detect pigs
     if en_pig
-        [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame_py);
+        [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame);
     end
 %     
 %   
