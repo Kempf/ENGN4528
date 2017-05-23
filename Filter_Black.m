@@ -10,9 +10,6 @@ frame = imclose(frame,SE);
 BW = bwareafilt(frame,[50,1000]);
 
 
-figure(2);
-image(BW*1000);
-
 region = regionprops(BW,'BoundingBox');
 colour_detected_rec = [];
 coord = [];
