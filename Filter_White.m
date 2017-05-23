@@ -24,6 +24,8 @@ colour_detected_rec = [];
             (region(i).BoundingBox(1)+region(i).BoundingBox(3) <= 770)
             
             region(i).BoundingBox = region(i).BoundingBox + [-3,-13,5,15];
+			
+			coord = [coord; region(i).BoundingBox(1)+region(i).BoundingBox(3), region(i).BoundingBox(2)+region(i).BoundingBox(4)];
             
             window = CropColour(imcrop(frame_ad,region(i).BoundingBox),[255,255,200,250,100,190]);
             if sum(window(:)) >= 10
