@@ -32,7 +32,7 @@ en_sling = 1;
 % loop = [22 28]; % blue birds
 % loop = [29 31]; % yellow birds
 % loop = [37 40]; % black birds
-% loop = [45 48]; % white bird
+ loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
@@ -136,7 +136,7 @@ while hasFrame(video)
     %no detection 
     % detect white bird
     if en_white
-        [white_coord,rec_w,rec_drawn_w] = Filter_White(frame_py);
+        [white_coord,rec_w,rec_drawn_w] = Filter_White(frame);
     end
     
 %    % detect pigs
