@@ -45,10 +45,9 @@ frame_count = 1;
 
 frame_prev = readFrame(video);
 
-%jrajectory
+%trajectory
 coord_store = NaN(2,3);
 para_traj = NaN(1,3);
-
 
 frame_prev = readFrame(video); 
 coord_store = NaN(2,3); % store the coordinates to sketch the parabolic curves
@@ -58,6 +57,7 @@ init_frame = NaN; % the frame which the bird is launched
 frame_number = 1; % current frame number
 Vx = NaN; % velocity in x direction
 world_coord = [NaN,NaN]; %world coordnate system
+Data = NaN(6,4);
 
 while hasFrame(video)
     
@@ -138,16 +138,11 @@ while hasFrame(video)
 %     
 %     
 %
-    
-
     drawnow
 %     frame_prev = frame;
 %     delete(rec_drawn_r)
 %     delete(rec_drawn_s)
 %     delete(frame_obj)
-%     
-%     
-%     
 %         % fps counter
         frame_count = frame_count + 1;
     if frame_count == 10
