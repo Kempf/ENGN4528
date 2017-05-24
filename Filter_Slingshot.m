@@ -20,7 +20,8 @@ region = regionprops(BW,'BoundingBox');
 for i = 1:size(region,1)
     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
     if  (region(i).BoundingBox(4)/region(i).BoundingBox(3)) > 2.4 &&...
-            area > 1500 
+            area > 1000 &&...
+            region(i).BoundingBox(1) < 200
        
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
             region(i).BoundingBox(2)+region(i).BoundingBox(4)];

@@ -16,3 +16,4 @@ octave-workspace
 
 # Simulink autosave extension
 .autosave
+Filter_White.m

@@ -42,7 +42,7 @@ for i = 1:size(region,1)
         %rectangle('Position',beakpos,'EdgeColor','c','LineWidth',2);
         if sum(window(:)) >= 2
             coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2,0,2];
             figure(1)
             rec = rectangle('Position',region(i).BoundingBox,'EdgeColor','b','LineWidth',2);
             colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
