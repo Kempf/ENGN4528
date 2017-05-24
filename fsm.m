@@ -120,7 +120,7 @@ while hasFrame(video)
         enable_state=0;
         continue;
    	end;
-    
+    hold off;
     %after sling is detected
 	if state == 0
         %disable other detection function if slingshot is steady
@@ -196,11 +196,17 @@ while hasFrame(video)
                                                    isempty(find(object_coord(:,3)==5)))==0 )
         signal_tform=0;
         signal_sling=0;
-        state_of_detection=[1,0,0,0,0,0];
+        state_of_detection=[0,0,0,0,0,0];
         coord_trajectory=[];
         sling_coord=[];
         sling_position=[];
         m=eye(3);
+        state=3;
+        continue;
+    end;
+    if state==3 && isequal(frame,255*ones(320,480,3))
+        state_of_detection=[1,0,0,0,0,0];
         state=-1;
+        continue;
     end;
 end;
