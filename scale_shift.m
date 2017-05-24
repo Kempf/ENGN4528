@@ -1,6 +1,4 @@
 function [ scale_ratio,x_shift,y_shift ] = scale_shift( frame1,frame2 )
-%SCALE_SHIFT 此处显示有关此函数的摘要
-%   此处显示详细说明
 
 original = rgb2gray(frame1(60:320,:,:));
 distorted = rgb2gray(frame2(60:320,:,:));
