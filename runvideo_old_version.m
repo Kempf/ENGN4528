@@ -203,7 +203,7 @@ while hasFrame(video)
     if size(black_coord,2)~=0
         k_traj=[k_traj;[black_coord,ones(size(black_coord,1),1)]/m];
     end;
-  	trajectory_sketch(k_traj',m);
+  	trajectory_sketch(k_traj,m);
     
     frame_prev = frame; 
     
