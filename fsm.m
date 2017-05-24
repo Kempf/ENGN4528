@@ -9,42 +9,163 @@
 % 3--yellow
 % 4--black
 % 5--white
+% 6--pig
 
 %state of FSM
 % 0:before bird flying, 1:after bird flying ,before bird collapse, 2:after
 % bird collaspe
+close all
+clear all
+clc
+
+fVid = figure('Name','Angry Birds');
+
+% pause on click
+set(fVid,'WindowButtonDownFcn',@(src,eventdata)run_pause(src,eventdata));
+
+if ismac
+    video = VideoReader('Angry Birds In-game Trailer-quicktime.mov');
+    % Need this for me(Jae) to work on Macbook
+    % Mac cannot read avi video
+else
+    video = VideoReader('Angry Birds In-game Trailer.avi');
+end
+
+clc_str = '';
+
+% select which detection algorithms to run
+en_red = 1;
+en_black = 1;
+en_blue = 1;
+en_yellow = 1;
+en_white = 1;
+en_pig = 1;
+en_sling = 1;
+
+% video start and end
+loop = [45 60]; % whole video
+% loop = [14 20]; % red birds
+% loop = [22 28]; % blue birds
+% loop = [28 31]; % yellow birds
+% loop = [37 40]; % black birds
+% loop = [45 48]; % white bird
+% loop = [15 20]; % pigs 1
+% loop = [25 28]; % pigs 2
+% loop = [31 36]; % pigs 3
+% loop = [46 48]; % pigs 4
+
+% detection control
+%              pig 	  red	  	blue   	 yellow   black   white
+det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
+det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
+    zeros(1,6)];
+sling = [12 15; 22 24; 28 30; 37 38; 45 47; 56 57];
+
+video.CurrentTime = loop(1);
+toc_0 = 0;
+tic
+frame_count = 1;
+
+frame = readFrame(video);
+
+object_coord=[];
+m=eye(3);
+coord_trajectory=[];
+signal_tform=0;
+signal_sling=0;
+
+text=[];
+point=[];
+traj=[];
+
 state=-1;
-state_of_detection=[0,0,0,0,0,1];
+state_of_detection=[1,0,0,0,0,0];
 move_bird=zeros(1,4);
 
-while(1)
-    detection_code;
+while hasFrame(video)
+    if ~ishghandle(fVid)
+        break
+    end
     
-    if state == -1 && isNAN(x_coord_of_slingshot)==0
-        pre_xcoord_of_slingshot=x_coord_of_slingshot;
+    delete(text);
+    delete(point);
+    delete(traj);
+    
+    frame_prev =frame;
+    frame = readFrame(video);
+    figure(1)
+    frame_obj = image(frame);
+    %???
+    
+    
+    if isempty(object_coord)~=1
+    move_bird=object_coord(find(object_coord(:,3) == -1),:);
+    end;
+    
+    object_coord=detection(state_of_detection,frame);
+    sling_coord=object_coord(find(object_coord(:,3)==0),1:2);
+    
+    if signal_tform
+        if signal_sling==0
+            sling_position=object_coord(1,1:2);
+            signal_sling=1;
+        end;
+        %calculate tform matrix
+        [scale_ratio,x_shift,y_shift,tform]=scale_shift(frame_prev,frame);
+        if isempty(move_bird)~=1
+            move_bird(4:6)=[move_bird(1:2),1]/m-[sling_position,0];
+            %plot parabolic
+            coord_trajectory=[coord_trajectory;move_bird(4:6)+[sling_position(1:2),0]];
+            [point,traj]=trajectory_sketch(coord_trajectory,m);
+        end;
+        m=m*tform;
+        if isempty(object_coord)~=1
+            for i = 1 : size(object_coord,1)
+                object_coord(i,4:6)=[object_coord(i,1:2),1]/m-[sling_position,0];
+            end;
+            %display object coordinates
+            %???
+            text=coordinate_display(object_coord);
+            
+        end;
+    end
+    drawnow
+    %sling is detected first time
+    if state == -1 && isempty(sling_coord)~=1
+        %???
+        pre_sling_coord=sling_coord;
         state=0;
         state_of_detection=[1,1,1,1,1,1];
+        %enable all detection
         enable_state=0;
         continue;
    	end;
-            
+    
+    %after sling is detected
 	if state == 0
         %disable other detection function if slingshot is steady
-        if enable_state==0 && x_coord_of_slingshot-pre_xcoord_of_slingshot<3
-            for i = 1 : size(coord_state_type,1)
-                state_of_detection(coord_state_type(i,4))=1;
+        %start calculating tform matrix
+        if enable_state==0 && sling_coord(1)-pre_sling_coord(1)<1
+            state_of_detection=[0,0,0,0,0,0];
+            signal_tform=1;
+            for i = 1 : size(object_coord,1)
+                %object_coord i+1(0 is sling) is the same object with
+                %state_of_detection i(1 is sling)
+                state_of_detection(object_coord(i,3)+1)=1;
             end;
+            %enable detected birds when sling is stayble
             enable_state=1;
             continue;
-        else
-            pre_xcoord_of_slingshot=x_coord_of_slingshot;
+        elseif enable_state==0
+            %sling not stayble
+            pre_sling_coord=sling_coord;
             continue;
         end;
         if enable_state==1
-            for i = 1 : size(coord_state_type,1)
-                if coord_state_type(i,1)-x_coord_of_slingshot > 2
-                    coord_state_type(i,3)=1;
-                    move_bird=coord_state_type(i,:);
+            for i = 1 : size(object_coord,1)
+                if object_coord(i,4) > 1 && object_coord(i,3)~=0
+                    object_coord(i,3)=-1;
+                    %bird is flying
                     state = 1;
                     break;
                 end;
@@ -55,26 +176,42 @@ while(1)
     
     if state == 1
         %disable slingshot detection if it is unnecessary
-        if state_of_detection(6)~=0 && slingshot_detect==0
-            state_of_detection(6)=0;
+        if state_of_detection(1)~=0 && isempty(object_coord(find(object_coord(:,3)==0)))
+            state_of_detection(1)=0;
         end;
         %calculate which one is the move bird in new frame
-        for i = 1 : size(coord_state_type,1)
-            if coord_state_type(i,1)+coord_state_type(i,2)-move_bird(1)-move_bird(2)<20
-                coord_state_type(i,3)=1;
-                if  condition
-                    state=2;
+        if size(object_coord,1) == 1
+            object_coord(3)=-1;
+        elseif size(object_coord,1) > 1
+            for i = 1 : size(object_coord,1)
+                if object_coord(i,4)+object_coord(i,5)-move_bird(4)-move_bird(5)<20 && object_coord(i,4)>move_bird(4) && object_coord(i,3)~=0
+                    object_coord(i,3)=-1;
+                    no_move_bird=0;
+                    %%%collaspe
                     break;
+                    
+                else
+                    no_move_bird=1;
                 end;
             end;
-            break;
+        elseif isempty(object_coord)
+            continue;
         end;
+        %%%collapse???
+        if (abs(tform(3,1))<1 && (isempty(object_coord)==1 || no_move_bird==1)) || no_move_bird==1||(object_coord(find(object_coord(:,3)==-1),4)-move_bird(4)<0.5)
+            state=2;
+            continue;
+        end;
+        %%%special bird trajectory ploting and detection
         continue;
     end;
 
-    % whiteout detection
-    if state== 2 && frame == 255 * ones(360,640,3)
-        state_of_detection=[0,0,0,0,0,1];
+    % stage change detection
+    if state== 2 && isempty(object_coord)==1 %isequal(frame,255 * ones(320,480,3))==1
+        signal_tform=0;
+        signal_sling=0;
+        state_of_detection=[1,0,0,0,0,0];
+        coord_trajectory=[];
         state=-1;
     end;
 end;
