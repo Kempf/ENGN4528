@@ -155,7 +155,7 @@ while hasFrame(video)
     if en_pig
         [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame);
     end
-<<<<<<< HEAD
+
 %     
 %   
 %     
@@ -170,14 +170,14 @@ while hasFrame(video)
 %     delete(frame_obj)
 %         % fps counter
         frame_count = frame_count + 1;
-=======
+
   
     velocity = OpticsBackground(frame_prev,frame,1);
 
     drawnow
     % fps counter
 	frame_count = frame_count + 1;
->>>>>>> 961df70e1097d8d67d2ee6debe08c743a59fb71a
+
     if frame_count == 10
         frame_count = 1;
         toc_1 = toc;
