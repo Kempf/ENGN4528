@@ -13,9 +13,9 @@ BW = bwareafilt(frame,[5,150]);
 SE = strel('disk',2);
 BW= imclose(BW,SE);
 
-subplot(1,2,2);
-image(BW*1000);
-subplot(1,2,1);
+% subplot(1,2,2);
+% image(BW*1000);
+% subplot(1,2,1);
 
 region  = regionprops(BW,'BoundingBox');
 coord = [];
