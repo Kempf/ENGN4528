@@ -46,7 +46,7 @@ for i = 1:size(region,1)
 %         region(i).BoundingBox = 2*region(i).BoundingBox;
         
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2,0,1];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
         figure(1)
         rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','r','LineWidth',2);
 %         plot(coord(:,1),coord(:,2),'r*');

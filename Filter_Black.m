@@ -23,7 +23,7 @@ for i = 1:size(region,1)
                ((region(i).BoundingBox(3)/region(i).BoundingBox(4)) < 1.7) &&...
 			   (region(i).BoundingBox(2) >= 55 && region(i).BoundingBox(2) <= 260)
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3),...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4),0,3];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)];
         figure(1)
         rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','k','LineWidth',2);
         colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];

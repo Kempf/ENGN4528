@@ -17,7 +17,7 @@ if state_of_detection(1)
     
     %     % detect blue birds
     if state_of_detection(3)
-        [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame_py);
+        [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame);
         object_coord=[object_coord;blue_coord,2*ones(size(blue_coord,1),3)];
     end
     

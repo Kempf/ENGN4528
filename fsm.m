@@ -45,7 +45,7 @@ en_sling = 1;
 % video start and end
 loop = [45 60]; % whole video
 % loop = [14 20]; % red birds
-% loop = [22 28]; % blue birds
+ loop = [22 28]; % blue birds
 % loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
@@ -207,6 +207,7 @@ while hasFrame(video)
     end;
 
     % stage change detection
+    %%%some problem with ending with only pig
     if state== 2 && isempty(object_coord)==1 %isequal(frame,255 * ones(320,480,3))==1
         signal_tform=0;
         signal_sling=0;
