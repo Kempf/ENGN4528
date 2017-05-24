@@ -29,7 +29,7 @@ en_sling = 1;
 % video start and end
 loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
- loop = [22 28]; % blue birds
+% loop = [22 28]; % blue birds
 % loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
@@ -132,7 +132,6 @@ while hasFrame(video)
     %    % scale frame by 1/2 in order to process quicker
     %
     figure(1)
-    subplot(1,2,1);
     %     % draw frame
     frame_obj = image(frame);
     
@@ -147,10 +146,10 @@ while hasFrame(video)
         [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame);
     end
     
-    % detect blue birds
-    if en_blue
-        [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame);
-    end
+    %     % detect blue birds
+    %     if en_blue
+    %         [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame_py);
+    %     end
     
     % detect yellow bird
     if en_yellow

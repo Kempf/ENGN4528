@@ -15,7 +15,7 @@ matchedOriginal  = validPtsOriginal(indexPairs(:,1));
 matchedDistorted = validPtsDistorted(indexPairs(:,2));
 
 [tform, inlierDistorted, inlierOriginal] = estimateGeometricTransform(...
-    matchedDistorted, matchedOriginal, 'similarity');
+    matchedOriginal, matchedDistorted, 'similarity');
 
 Tinv  = tform.invert.T;
 ss = Tinv(2,1);
@@ -26,5 +26,6 @@ scale_recovered = sqrt(ss*ss + sc*sc)
 scale_ratio=scale_recovered;
 x_shift=transform(1);
 y_shift=transform(2);
+tform=inv(Tinv);
 end
 
