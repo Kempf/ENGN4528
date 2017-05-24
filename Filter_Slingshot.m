@@ -1,6 +1,6 @@
-function [coord,colour_detected_rec,rec_drawn] = Filter_Slingshot(frame)
+function [coord,rec_drawn] = Filter_Slingshot(frame)
 coord = [];
-colour_detected_rec = [];
+
 rec_drawn = [];
 %pre-process
 frame = CropColour(frame,[120,190,70,160,37,100]);
@@ -23,15 +23,16 @@ for i = 1:size(region,1)
             area > 1500 
        
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)];
         figure(1)
-         rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','m','LineWidth',2);
-          
-         colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
+%          rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','m','LineWidth',2);
+         line([region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,region(i).BoundingBox(1)+region(i).BoundingBox(3)/2],...
+             [region(i).BoundingBox(2),region(i).BoundingBox(2)+region(i).BoundingBox(4)],'Color','m','LineWidth',4)
+
     end
 end
 
-colour_detected_rec = round(colour_detected_rec);
+
 
 
 
