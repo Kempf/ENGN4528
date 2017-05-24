@@ -30,9 +30,9 @@ en_sling = 1;
  loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
 % loop = [22 28]; % blue birds
-% loop = [28 31]; % yellow birds
+% loop = [29 36]; % yellow birds
 % loop = [37 40]; % black birds
-loop = [45 48]; % white bird
+ loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
@@ -159,7 +159,7 @@ while hasFrame(video)
 %     
 %   
 %     
-     velocity = OpticsBackground(frame_prev,frame,1);
+     %velocity = OpticsBackground(frame_prev,frame,1);
 %     
 %     
 %
@@ -172,7 +172,7 @@ while hasFrame(video)
         frame_count = frame_count + 1;
 
   
-    velocity = OpticsBackground(frame_prev,frame,1);
+    %velocity = OpticsBackground(frame_prev,frame,1);
 
     drawnow
     % fps counter
@@ -188,9 +188,11 @@ while hasFrame(video)
         clc_str = repmat(sprintf('\b'), 1, length(msg));
         toc_0 = toc_1;
     end
-    
+    %frame_feature(frame_prev,frame);
+    scale_shift(frame_prev,frame);
     frame_prev = frame; 
     
+
     frame_number = frame_number + 1;
     
 end
