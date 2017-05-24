@@ -1,16 +1,18 @@
 function coord = trajectory_sketch(coord_store,M)
-coord_store1 = coord_store;
 
-if sum(isnan(coord_store)) == 0
-    coord_store = [coord_store;ones(3,1)]';
-    coord = coord_store*M;
+if size(coord_store,2)>2
+    %coord_store = [coord_store;ones(1,size(coord_store,2))]';
+    coord = coord_store'*M;
     coord(3,:) = [];
     
-    x = coord(1,:);
-    y = coord(2,:);
+    x = coord(:,1);
+    y = coord(:,2);
+    for i = 1 : size(coord,1)
+        plot(coord(i,1),coord(i,2),'ro');
+    end;
     para_traj = polyfit(x,y,2);
     pix_x = 0:480;
-    pix_y = para_traj(1)*pix_x^2+para_traj(2)*pix_x+para_traj(3);
+    pix_y = polyval(para_traj,pix_x);
     traj = plot(pix_x,pix_y,'k');
     drawnow;
 %     if sum(isnan(coord_store1)) ~= 0
