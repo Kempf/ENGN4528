@@ -31,9 +31,9 @@ region  = regionprops(BW,'BoundingBox');
 
 for i = 1:size(region,1)
     area = region(i).BoundingBox(3) * region(i).BoundingBox(4);
-    if (area < 500) && (area > 1 )
+    if (area < 500) && (area > 30 )
 
-        region(i).BoundingBox = round((region(i).BoundingBox) + (area/90).*[-2,-2,4,6]);
+        region(i).BoundingBox = (region(i).BoundingBox) + (area/90).*[-2,-2,4,6];
 %         ic = imcrop(frame_yellow,region(i).BoundingBox);
 %         window = CropColour(ic,[255,255,80,255,0,170]);
 %         figure(3)
@@ -46,7 +46,7 @@ for i = 1:size(region,1)
 %         region(i).BoundingBox = 2*region(i).BoundingBox;
         
         coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2,0,1];
         figure(1)
         rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','r','LineWidth',2);
 %         plot(coord(:,1),coord(:,2),'r*');
