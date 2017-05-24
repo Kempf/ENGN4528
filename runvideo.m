@@ -29,16 +29,17 @@ en_sling = 1;
 
 
 % video start and end
-% loop = [12 60]; % whole video
+loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
-% loop = [22 28]; % blue birds
+loop = [22 28]; % blue birds
 % loop = [29 32]; % yellow birds
-loop = [37 40]; % black birds
+% loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
 % loop = [46 48]; % pigs 4
+loop = [56,60]
 
 % detection control
 %              pig 	  red	  	blue   	 yellow   black   white
@@ -146,16 +147,16 @@ while hasFrame(video)
     end
     
     %     % detect red birds
-    if  en_red
+    if  1
         [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame);
     else
         red_coord = [];
     end
     
-    %     % detect blue birds
-    %     if en_blue
-    %         [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame_py);
-    %     end
+    % detect blue birds
+    if en_blue
+        [blue_coord,rec_b,rec_drawn_b] = Filter_Blue(frame);
+    end
     
     % detect yellow bird
     if en_yellow
@@ -186,12 +187,10 @@ while hasFrame(video)
     end
     
     bird_pixel =[red_coord;blue_coord;black_coord;yellow_coord;white_coord];
+   
     
     
-    
-    
-    
-    if isequal(frame,255*ones(320,480,3))
+    if isequal(rgb2gray(frame),255*ones(320,480))
         whiteout_time = video.CurrentTime;
         en_sift = 0;
         sling_recorded = 0;
@@ -216,6 +215,12 @@ while hasFrame(video)
         
     end
     
+    % 0: undetermined
+    % 1: birds on the ground
+    % 2: birds on the slingshot
+    % 3: launched
+    % 4: accelerated
+    % 5: collision
     
     if (sling_recorded == 0) &&  x_shift == 0 && y_shift == 0;
         gen_sling_coord = sling_coord;
@@ -231,9 +236,39 @@ while hasFrame(video)
             bird_coord(i,1) = scale*bird_pixel(i,1)- background_displacement(1)-gen_sling_coord(1);
             bird_coord(i,2) = gen_sling_coord(2) - background_displacement(2)-scale*bird_pixel(i,2);
             bird_coord(i,3) = 1;
+            
+            if bird_coord(i,2) >= 30
+                bird_coord(i,3) = 2;
+            end
+            
+            if bird_coord(i,1) >= 5
+                bird_coord(i,3) = 3;
+            end
+            
+            
+            
+            if (bird_coord(i,4) == 5) && bird_coord(i,3) == 3
+                if bird_coord(i,1) - prev_bird_coord(i,1) > 20
+                    bird_coord(i,3)  = 4; %acceleration
+                end
+            end
+            
+%             for j = 1:size(prev_bird_coord,1)
+%                 if bird_coord(j,3) == 3
+%                     
+%             end
+            
+            
+            
+            
         end
-        prev_bird_coord =  bird_coord
         
+        
+        
+        
+        if ~isempty(bird_coord)
+            prev_bird_coord =  bird_coord
+        end
         
     end
     
