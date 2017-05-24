@@ -30,13 +30,20 @@ en_sling = 1;
  loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
 % loop = [22 28]; % blue birds
-% loop = [29 31]; % yellow birds
+% loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
- loop = [45 48]; % white bird
+loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
 % loop = [46 48]; % pigs 4
+
+% detection control 
+%              pig 	  red	  	blue   	 yellow   black   white	
+det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
+det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
+	zeros(1,6)];
+sling = [12 15; 22 24; 28 30; 37 38; 45 47; 56 57];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -65,7 +72,39 @@ while hasFrame(video)
     if video.CurrentTime >= loop(2)
         video.CurrentTime = loop(1);
     end
+	
+	for k=1:6
+		if(video.CurrentTime >= det_cont(1,k) &&...
+			video.CurrentTime <= det_cont(2,k) &&...
+			det_cont(3,k))
+			
+			det_cont(4,k) = 1;
+		else
+			det_cont(4,k) = 0;
+		end
+	end
     
+	sling_det = zeros(size(sling,1),1);
+	for k=1:size(sling,1)
+		if(video.CurrentTime >= sling(k,1) &&...
+			video.CurrentTime <= sling(k,2))
+			
+			sling_det(k) = 1;
+		end
+	end
+	if(any(sling_det))
+		en_sling = 1;
+	else
+		en_sling = 0;
+	end
+	
+	en_pig = det_cont(4,1);
+	en_red = det_cont(4,2);
+	en_blue = det_cont(4,3);
+	en_yellow = det_cont(4,4);
+	en_black = det_cont(4,5);
+	en_white = det_cont(4,6);
+	
     % exit if video window is closed
     if ~ishghandle(fVid)
         break
@@ -75,21 +114,6 @@ while hasFrame(video)
 
 %    % scale frame by 1/2 in order to process quicker
     frame_py = impyramid(frame,'reduce');
-%     frame_r = imadjust(frame_py,[.499 0.2 0; .501 .8 1],[]);
-%     frame_k = imadjust(frame_py,[.499 .499 .499; .501 .501 .501],[]);
-%     frame_g = imadjust(frame_py,[ 0 .499 0.2; 1 .501 0.8],[]);
-%     frame_b = imadjust(frame_py,[ 0 0 .499; 0.7 0.5 .501],[]);
-%     frame_y = imadjust(frame_py,[ 0 0 0; 0.8 0.7 1],[]);
-%     frame_w = imadjust(frame_py,[ 0 0 0; 0.8 0.8 0.7],[]);
-          
-%     % color threshold objects
-%     frame_red_bird = CropColour(frame_r,[255,255,0,0,30,70]);
-%     frame_blue_bird = CropColour(frame_b,[100,175,255,255,255,255]);
-%     frame_black_bird = CropColour(frame_k,[0,0,0,0,0,0]);
-%     frame_pig = CropColour(frame_g,[100,150,255,255,0,100]);
-%     frame_yellow_bird = CropColour(frame_y,[255,255,255,255,20,100]);
-%     frame_white_bird = CropColour(frame_w,[255,255,255,255,255,255]);
-%     frame_slingshot = CropColour(frame,[120,190,70,160,37,100]);
 %     
     figure(1)
 %     % draw frame
@@ -98,12 +122,12 @@ while hasFrame(video)
     
     % detect slingshot
     if en_sling
-        [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame_py);
+        [sling_coordt,rec_s,rec_drawn_s] = Filter_Slingshot(frame);
     end
     
 %     % detect red birds
     if  en_red
-        [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame_py);
+        [red_coord,rec_r,rec_drawn_r] = Filter_Red(frame);
     end
     
 %     % detect blue birds
@@ -113,12 +137,12 @@ while hasFrame(video)
     
     % detect yellow bird
     if en_yellow
-        [yellow_coord,rec_y,rec_drawn_y] = Filter_Yellow(frame_py);
+        [yellow_coord,rec_y,rec_drawn_y] = Filter_Yellow(frame);
     end
     
 %     % black birds
     if en_black
-        [black_coord,rec_k,rec_drawn_k] = Filter_Black(frame_py);
+        [black_coord,rec_k,rec_drawn_k] = Filter_Black(frame);
     end
     
     %no detection 
@@ -129,8 +153,9 @@ while hasFrame(video)
     
 %    % detect pigs
     if en_pig
-        [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame_py);
+        [pig_coord,rec_g,rec_drawn_g] = Filter_Pig(frame);
     end
+<<<<<<< HEAD
 %     
 %   
 %     
@@ -145,6 +170,14 @@ while hasFrame(video)
 %     delete(frame_obj)
 %         % fps counter
         frame_count = frame_count + 1;
+=======
+  
+    velocity = OpticsBackground(frame_prev,frame,1);
+
+    drawnow
+    % fps counter
+	frame_count = frame_count + 1;
+>>>>>>> 961df70e1097d8d67d2ee6debe08c743a59fb71a
     if frame_count == 10
         frame_count = 1;
         toc_1 = toc;
