@@ -25,7 +25,7 @@ rec_drawn = [];
        
             region(i).BoundingBox = region(i).BoundingBox + (area/120)*[-3,-3,5,5];
             coord = [coord;region(i).BoundingBox(1)+region(i).BoundingBox(3)/2,...
-            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2];
+            region(i).BoundingBox(2)+region(i).BoundingBox(4)/2,0,5];
         figure(1)
             rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','y','LineWidth',2);
             colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
