@@ -31,21 +31,10 @@ else
     video = VideoReader('Angry Birds In-game Trailer.avi');
 end
 
-clc_str = '';
-
-% select which detection algorithms to run
-en_red = 1;
-en_black = 1;
-en_blue = 1;
-en_yellow = 1;
-en_white = 1;
-en_pig = 1;
-en_sling = 1;
-
 % video start and end
-loop = [45 60]; % whole video
+loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
- loop = [22 28]; % blue birds
+% loop = [22 28]; % blue birds
 % loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
@@ -53,13 +42,6 @@ loop = [45 60]; % whole video
 % loop = [25 28]; % pigs 2
 % loop = [31 36]; % pigs 3
 % loop = [46 48]; % pigs 4
-
-% detection control
-%              pig 	  red	  	blue   	 yellow   black   white
-det_time = [ [14; 60] [12; 24] [21; 28] [28; 34] [37; 41] [37; 49]];
-det_cont = [det_time; en_pig en_red en_blue en_yellow en_black en_white;...
-    zeros(1,6)];
-sling = [12 15; 22 24; 28 30; 37 38; 45 47; 56 57];
 
 video.CurrentTime = loop(1);
 toc_0 = 0;
@@ -87,16 +69,14 @@ while hasFrame(video)
         break
     end
     
-    delete(text);
-    delete(point);
-    delete(traj);
-    
     frame_prev =frame;
     frame = readFrame(video);
     figure(1)
     frame_obj = image(frame);
     %???
-    
+%     delete(text);
+%     delete(point);
+%    	delete(traj);
     
     if isempty(object_coord)~=1
     move_bird=object_coord(find(object_coord(:,3) == -1),:);
@@ -145,7 +125,7 @@ while hasFrame(video)
 	if state == 0
         %disable other detection function if slingshot is steady
         %start calculating tform matrix
-        if enable_state==0 && sling_coord(1)-pre_sling_coord(1)<1
+        if enable_state==0 && abs(sling_coord(1)-pre_sling_coord(1))<0.01
             state_of_detection=[0,0,0,0,0,0];
             signal_tform=1;
             for i = 1 : size(object_coord,1)
@@ -163,7 +143,7 @@ while hasFrame(video)
         end;
         if enable_state==1
             for i = 1 : size(object_coord,1)
-                if object_coord(i,4) > 1 && object_coord(i,3)~=0
+                if object_coord(i,4) > 15 && object_coord(i,4)<30 &&object_coord(i,3)~=0 && object_coord(i,3)~=6
                     object_coord(i,3)=-1;
                     %bird is flying
                     state = 1;
@@ -200,6 +180,7 @@ while hasFrame(video)
         %%%collapse???
         if (abs(tform(3,1))<1 && (isempty(object_coord)==1 || no_move_bird==1)) || no_move_bird==1||(object_coord(find(object_coord(:,3)==-1),4)-move_bird(4)<0.5)
             state=2;
+            signal_tform=0;
             continue;
         end;
         %%%special bird trajectory ploting and detection
@@ -208,11 +189,18 @@ while hasFrame(video)
 
     % stage change detection
     %%%some problem with ending with only pig
-    if state== 2 && isempty(object_coord)==1 %isequal(frame,255 * ones(320,480,3))==1
+    if state== 2 && (isempty(object_coord)==1|| (isempty(find(object_coord(:,3)==1))|| ...
+                                                   isempty(find(object_coord(:,3)==2))||...
+                                                   isempty(find(object_coord(:,3)==3))||...
+                                                   isempty(find(object_coord(:,3)==4))||...
+                                                   isempty(find(object_coord(:,3)==5)))==0 )
         signal_tform=0;
         signal_sling=0;
         state_of_detection=[1,0,0,0,0,0];
         coord_trajectory=[];
+        sling_coord=[];
+        sling_position=[];
+        m=eye(3);
         state=-1;
     end;
 end;

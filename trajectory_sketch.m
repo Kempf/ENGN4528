@@ -1,6 +1,8 @@
 function [point,traj] = trajectory_sketch(coord_store,M)
 %coord_store:n*3 world_coord
-if size(coord_store,2)>2
+point=[];
+traj=[];
+if size(coord_store,1)>2
     %coord_store = [coord_store;ones(1,size(coord_store,2))]';
     coord = coord_store*M;
     
