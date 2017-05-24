@@ -1,4 +1,4 @@
-function coord = trajectory_sketch(coord_store,M)
+function [point,traj] = trajectory_sketch(coord_store,M)
 %coord_store:n*3 world_coord
 if size(coord_store,2)>2
     %coord_store = [coord_store;ones(1,size(coord_store,2))]';
@@ -8,7 +8,7 @@ if size(coord_store,2)>2
     y = coord(:,2);
     hold on
     for i = 1 : size(coord,1)
-        plot(coord(i,1),coord(i,2),'ro');
+        point(i)=plot(coord(i,1),coord(i,2),'ro');
     end;
     para_traj = polyfit(x,y,2);
     pix_x = 0:480;
