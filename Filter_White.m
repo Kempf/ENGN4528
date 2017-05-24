@@ -25,12 +25,12 @@ colour_detected_rec = [];
             
             region(i).BoundingBox = region(i).BoundingBox + [-3,-13,5,15];
 			
-			coord = [coord; region(i).BoundingBox(1)+region(i).BoundingBox(3), region(i).BoundingBox(2)+region(i).BoundingBox(4)];
             
             window = CropColour(imcrop(frame_ad,region(i).BoundingBox),[255,255,200,250,100,190]);
             if sum(window(:)) >= 10
                 rec_drawn = rectangle('Position',region(i).BoundingBox,'EdgeColor','w','LineWidth',4);
                 colour_detected_rec = [colour_detected_rec;region(i).BoundingBox];
+                coord = [coord; region(i).BoundingBox(1)+region(i).BoundingBox(3), region(i).BoundingBox(2)+region(i).BoundingBox(4)];
             end
         end
         
