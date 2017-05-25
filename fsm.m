@@ -36,7 +36,7 @@ end
 % video start and end
 loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
-% loop = [22 28]; % blue birds
+ loop = [22 28]; % blue birds
 % loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
@@ -71,6 +71,7 @@ thre=0;
 b_1=[];
 b_2=[];
 b_3=[];
+b_coord=[];
 
 y=[];
 
@@ -254,8 +255,8 @@ while hasFrame(video)
     
     %blue bird seperation
     if state == -2 
+        b_coord=im_blue(frame);
         if frame(30,44,2)>220
-            state=-1;
             signal_tform=0;
             signal_sling=0;
             state_of_detection=[1,0,0,0,0,0];
@@ -266,29 +267,59 @@ while hasFrame(video)
             state=-1;
             continue;
         end;
-        if isempty(find(object_coord(:,3)==2))==1
-            continue;
-        end;
-        if thre==1 || size(find(object_coord(:,3)==2),1)>1
-            thre=1;
-            if size(find(object_coord(:,3)==2),1)==3
-                value=[object_coord(find(object_coord(:,3)==2),2)];
-                b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
-                b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
-                b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
-                trajectory_sketch(b_1,m);
-                trajectory_sketch(b_2,m);
-                trajectory_sketch(b_3,m);
-                thre=1;
+        if size(b_coord,1)==1 && thre==0
+            num=find(object_coord(:,3)==2);
+            if isempty(num)~=1
+                object_coord(num(1,1),1:3)=[b_coord(:)',-2];
+                if num>1
+                    for i = 2 : size(num,1)
+                        object_coord(num(i,1),:)=[0 0 0 0 0 0];
+                    end;
+                end;
                 continue;
             else
+                object_coord=[object_coord;[b_coord(:)',-2,0,0,1]];
                 continue;
             end;
             
-        elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
-            object_coord(find(object_coord(:,3)==2),3)=-2;
+        end;
+        if size(b_coord,1)==3 && thre ==0
+            if max(b_coord(:,1))<209
+                value=b_coord(:,2);
+                b_1=[b_1;[b_coord(find(b_coord(:,2)==max(value)),:),1]/m];
+                b_2=[b_2;[b_coord(find(b_coord(:,2)==median(value)),:),1]/m];
+                b_3=[b_3;[b_coord(find(b_coord(:,2)==min(value)),:),1]/m];
+                trajectory_sketch(b_1,m);
+                trajectory_sketch(b_2,m);
+                trajectory_sketch(b_3,m);
+                continue;
+            else
+                thre=1;
+                continue;
+            end;
+        else
             continue;
         end;
+%         if thre==1 || size(find(object_coord(:,3)==2),1)>1
+%             thre=1;
+%             if size(find(object_coord(:,3)==2),1)==3
+%                 value=[object_coord(find(object_coord(:,3)==2),2)];
+%                 b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
+%                 b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
+%                 b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
+%                 trajectory_sketch(b_1,m);
+%                 trajectory_sketch(b_2,m);
+%                 trajectory_sketch(b_3,m);
+%                 thre=1;
+%                 continue;
+%             else
+%                 continue;
+%             end;
+%             
+%         elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
+%             object_coord(find(object_coord(:,3)==2),3)=-2;
+%             continue;
+%         end;
         continue;
     end;
     if state == -3 
