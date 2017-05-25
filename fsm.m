@@ -18,6 +18,8 @@ close all
 clear all
 clc
 
+warning('off','all');
+
 fVid = figure('Name','Angry Birds');
 
 % pause on click
@@ -75,6 +77,7 @@ w=[];
 
 egg=0;
 
+
 while hasFrame(video)
     if ~ishghandle(fVid)
         break
@@ -88,6 +91,7 @@ while hasFrame(video)
 %     delete(text);
 %     delete(point);
 %    	delete(traj);
+    
     
     if isempty(object_coord)~=1
     move_bird=object_coord(find(object_coord(:,3) <0),:);
@@ -116,7 +120,7 @@ while hasFrame(video)
             end;
             %display object coordinates
             %???
-            text=coordinate_display(object_coord);
+            %text=coordinate_display(object_coord);
             
         end;
     end

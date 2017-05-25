@@ -16,6 +16,9 @@ if size(coord_store,1)>2
     pix_x = 0:480;
     pix_y = polyval(para_traj,pix_x);
     traj = plot(pix_x,pix_y,'k');
+    text(double(x(end)),double(y(end)),char(poly2sym(para_traj)));
+    
+    %set(eqn,'String',char(poly2sym(para_traj)));
     drawnow;
 %     if sum(isnan(coord_store1)) ~= 0
 %         init_trajectory = para_traj;

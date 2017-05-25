@@ -20,8 +20,8 @@ matchedDistorted = validPtsDistorted(indexPairs(:,2));
 Tinv  = tform.invert.T;
 ss = Tinv(2,1);
 sc = Tinv(1,1);
-transform=Tinv(3,1:2)
-scale_recovered = sqrt(ss*ss + sc*sc)
+transform=Tinv(3,1:2);
+scale_recovered = sqrt(ss*ss + sc*sc);
 
 scale_ratio=scale_recovered;
 x_shift=transform(1);
