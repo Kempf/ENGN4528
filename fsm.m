@@ -58,7 +58,8 @@ coord_trajectory=[];
 signal_tform=0;
 signal_sling=0;
 
-text=[];
+% don't use function names as variables!
+%text=[];
 point=[];
 traj=[];
 
@@ -76,7 +77,7 @@ y=[];
 w=[];
 
 egg=0;
-
+msg = '';
 
 while hasFrame(video)
     if ~ishghandle(fVid)
@@ -87,10 +88,18 @@ while hasFrame(video)
     frame = readFrame(video);
     figure(1)
     frame_obj = image(frame);
-    %???
-%     delete(text);
-%     delete(point);
-%    	delete(traj);
+
+    if frame_count == 10
+        frame_count = 1;
+        toc_1 = toc;
+        time_per_frame = (toc_1 - toc_0)/10;
+        frame_per_sec = 1/time_per_frame;
+        msg = sprintf('FPS: %.1f\n', frame_per_sec);
+        figure(1);
+        toc_0 = toc_1;
+    end
+    text(0,0,msg);
+    frame_count = frame_count + 1; 
     
     
     if isempty(object_coord)~=1
@@ -327,6 +336,5 @@ while hasFrame(video)
             w=[w;object_coord(find(object_coord(:,3)==5),4:6)+[sling_position(1:2),0]];
             trajectory_sketch(w,m);
         end;
-    end;
-            
+    end;     
 end
