@@ -1,8 +1,8 @@
 %function [state_of_detection]=FSM(coord_state_type)
-%coord_state_type = n x 4 matrix, containing 
+%coord_state_type = n x 4 matrix, containing
 %    coordinate x, y / birds moving
 %   state(1=moving bird, 0 = steady object)
-%    type of objects: 
+%    type of objects:
 % 0--slingshot
 % 1--red
 % 2--blue
@@ -36,7 +36,7 @@ end
 % video start and end
 loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
- loop = [22 28]; % blue birds
+% loop = [22 28]; % blue birds
 % loop = [28 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
@@ -75,6 +75,7 @@ b_coord=[];
 
 y=[];
 
+w_coord=[];
 w=[];
 
 egg=0;
@@ -89,7 +90,7 @@ while hasFrame(video)
     frame = readFrame(video);
     figure(1)
     frame_obj = image(frame);
-
+    
     if frame_count == 10
         frame_count = 1;
         toc_1 = toc;
@@ -100,11 +101,11 @@ while hasFrame(video)
         toc_0 = toc_1;
     end
     text(0,0,msg);
-    frame_count = frame_count + 1; 
+    frame_count = frame_count + 1;
     
     
     if isempty(object_coord)~=1
-    move_bird=object_coord(find(object_coord(:,3) <0),:);
+        move_bird=object_coord(find(object_coord(:,3) <0),:);
     end;
     
     object_coord=detection(state_of_detection,frame);
@@ -144,10 +145,10 @@ while hasFrame(video)
         %enable all detection
         enable_state=0;
         continue;
-   	end;
+    end;
     hold off;
     %after sling is detected
-	if state == 0
+    if state == 0
         %disable other detection function if slingshot is steady
         %start calculating tform matrix
         if enable_state==0 && abs(sling_coord(1)-pre_sling_coord(1))<0.01
@@ -177,7 +178,7 @@ while hasFrame(video)
             end;
             continue;
         end;
-   	end;
+    end;
     
     if state == 1
         %disable slingshot detection if it is unnecessary
@@ -228,14 +229,14 @@ while hasFrame(video)
         %%%special bird trajectory ploting and detection
         continue;
     end;
-
+    
     % stage change detection
     %%%some problem with ending with only pig
     if state== 2 && (isempty(object_coord)==1|| (isempty(find(object_coord(:,3)==1))|| ...
-                                                   isempty(find(object_coord(:,3)==2))||...
-                                                   isempty(find(object_coord(:,3)==3))||...
-                                                   isempty(find(object_coord(:,3)==4))||...
-                                                   isempty(find(object_coord(:,3)==5)))==0 )
+            isempty(find(object_coord(:,3)==2))||...
+            isempty(find(object_coord(:,3)==3))||...
+            isempty(find(object_coord(:,3)==4))||...
+            isempty(find(object_coord(:,3)==5)))==0 )
         signal_tform=0;
         signal_sling=0;
         state_of_detection=[0,0,0,0,0,0];
@@ -254,7 +255,7 @@ while hasFrame(video)
     end;
     
     %blue bird seperation
-    if state == -2 
+    if state == -2
         b_coord=im_blue(frame);
         if frame(30,44,2)>220
             signal_tform=0;
@@ -300,29 +301,29 @@ while hasFrame(video)
         else
             continue;
         end;
-%         if thre==1 || size(find(object_coord(:,3)==2),1)>1
-%             thre=1;
-%             if size(find(object_coord(:,3)==2),1)==3
-%                 value=[object_coord(find(object_coord(:,3)==2),2)];
-%                 b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
-%                 b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
-%                 b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
-%                 trajectory_sketch(b_1,m);
-%                 trajectory_sketch(b_2,m);
-%                 trajectory_sketch(b_3,m);
-%                 thre=1;
-%                 continue;
-%             else
-%                 continue;
-%             end;
-%             
-%         elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
-%             object_coord(find(object_coord(:,3)==2),3)=-2;
-%             continue;
-%         end;
+        %         if thre==1 || size(find(object_coord(:,3)==2),1)>1
+        %             thre=1;
+        %             if size(find(object_coord(:,3)==2),1)==3
+        %                 value=[object_coord(find(object_coord(:,3)==2),2)];
+        %                 b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
+        %                 b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
+        %                 b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
+        %                 trajectory_sketch(b_1,m);
+        %                 trajectory_sketch(b_2,m);
+        %                 trajectory_sketch(b_3,m);
+        %                 thre=1;
+        %                 continue;
+        %             else
+        %                 continue;
+        %             end;
+        %
+        %         elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
+        %             object_coord(find(object_coord(:,3)==2),3)=-2;
+        %             continue;
+        %         end;
         continue;
     end;
-    if state == -3 
+    if state == -3
         if isempty(find(object_coord(:,3)==3))~=1
             y=[y;object_coord(find(object_coord(:,3)==3),4:6)+[sling_position(1:2),0]];
             trajectory_sketch(y,m);
@@ -343,7 +344,8 @@ while hasFrame(video)
     end;
     
     %white bird
-    if state == -5 
+    if state == -5
+        w_coord=im_white(frame);
         if frame(30,44,2)>220
             state=-1;
             signal_tform=0;
@@ -357,15 +359,21 @@ while hasFrame(video)
             continue;
         end;
         if egg==0
-            if isempty(find(object_coord(:,3)==5))==1
+            if size(w_coord,1)==2
+                egg=1;
                 continue;
-            else
-                object_coord(find(object_coord(:,3)==5),3)=-5;
+            elseif size(w_coord,1)==1
+                if isempty(find(object_coord(:,3)==5))==1
+                    object_coord=[object_coord;w_coord,-5,0,0,1];
+                else
+                    object_coord(find(object_coord(:,3)==5),3)=-5;
                 continue;
+                end;
             end;
-        elseif egg==1
-            w=[w;object_coord(find(object_coord(:,3)==5),4:6)+[sling_position(1:2),0]];
+        elseif egg==1 && isempty(w_coord)~=1
+            w=[w;[w_coord(1,:),1]/m];
             trajectory_sketch(w,m);
+            continue;
         end;
-    end;     
+    end;
 end
