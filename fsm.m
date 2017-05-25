@@ -64,6 +64,17 @@ state=-1;
 state_of_detection=[1,0,0,0,0,0];
 move_bird=zeros(1,4);
 
+thre=0;
+b_1=[];
+b_2=[];
+b_3=[];
+
+y=[];
+
+w=[];
+
+egg=0;
+
 while hasFrame(video)
     if ~ishghandle(fVid)
         break
@@ -79,7 +90,7 @@ while hasFrame(video)
 %    	delete(traj);
     
     if isempty(object_coord)~=1
-    move_bird=object_coord(find(object_coord(:,3) == -1),:);
+    move_bird=object_coord(find(object_coord(:,3) <0),:);
     end;
     
     object_coord=detection(state_of_detection,frame);
@@ -144,7 +155,7 @@ while hasFrame(video)
         if enable_state==1
             for i = 1 : size(object_coord,1)
                 if object_coord(i,4) > 15 && object_coord(i,4)<30 &&object_coord(i,3)~=0 && object_coord(i,3)~=6
-                    object_coord(i,3)=-1;
+                    object_coord(i,3)=-object_coord(i,3);
                     %bird is flying
                     state = 1;
                     break;
@@ -156,16 +167,16 @@ while hasFrame(video)
     
     if state == 1
         %disable slingshot detection if it is unnecessary
-        if state_of_detection(1)~=0 && isempty(object_coord(find(object_coord(:,3)==0)))
+        if state_of_detection(1)~=0 && isempty(object_coord(find(object_coord(:,3)<0)))
             state_of_detection(1)=0;
         end;
         %calculate which one is the move bird in new frame
         if size(object_coord,1) == 1
-            object_coord(3)=-1;
+            object_coord(3)=-object_coord(i,3);
         elseif size(object_coord,1) > 1
             for i = 1 : size(object_coord,1)
                 if object_coord(i,4)+object_coord(i,5)-move_bird(4)-move_bird(5)<20 && object_coord(i,4)>move_bird(4) && object_coord(i,3)~=0
-                    object_coord(i,3)=-1;
+                    object_coord(i,3)=-object_coord(i,3);
                     no_move_bird=0;
                     %%%collaspe
                     break;
@@ -177,8 +188,25 @@ while hasFrame(video)
         elseif isempty(object_coord)
             continue;
         end;
+        
+        % ???blue bird
+        if no_move_bird==1 && move_bird(3)==-2
+            state=-2;
+            continue;
+        end;
+        
+        if no_move_bird==1 && move_bird(3)==-3
+            state=-3;
+            continue;
+        end;
+        
+        if no_move_bird==1 && move_bird(3)==-5
+            state=-5;
+            continue;
+        end;
+        
         %%%collapse???
-        if (abs(tform(3,1))<1 && (isempty(object_coord)==1 || no_move_bird==1)) || no_move_bird==1||(object_coord(find(object_coord(:,3)==-1),4)-move_bird(4)<0.5)
+        if (abs(tform(3,1))<1 && (isempty(object_coord)==1 || no_move_bird==1)) || no_move_bird==1||(object_coord(find(object_coord(:,3)<0),4)-move_bird(4)<0.5)
             state=2;
             signal_tform=0;
             continue;
@@ -204,9 +232,97 @@ while hasFrame(video)
         state=3;
         continue;
     end;
+    
     if state==3 && isequal(frame,255*ones(320,480,3))
         state_of_detection=[1,0,0,0,0,0];
         state=-1;
         continue;
     end;
-end;
+    
+    %blue bird seperation
+    if state == -2 
+        if frame(30,44,2)>220
+            state=-1;
+            signal_tform=0;
+            signal_sling=0;
+            state_of_detection=[1,0,0,0,0,0];
+            coord_trajectory=[];
+            sling_coord=[];
+            sling_position=[];
+            m=eye(3);
+            state=-1;
+            continue;
+        end;
+        if isempty(find(object_coord(:,3)==2))==1
+            continue;
+        end;
+        if thre==1 || size(find(object_coord(:,3)==2),1)>1
+            thre=1;
+            if size(find(object_coord(:,3)==2),1)==3
+                value=[object_coord(find(object_coord(:,3)==2),2)];
+                b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
+                b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
+                b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
+                trajectory_sketch(b_1,m);
+                trajectory_sketch(b_2,m);
+                trajectory_sketch(b_3,m);
+                thre=1;
+                continue;
+            else
+                continue;
+            end;
+            
+        elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
+            object_coord(find(object_coord(:,3)==2),3)=-2;
+            continue;
+        end;
+        continue;
+    end;
+    if state == -3 
+        if isempty(find(object_coord(:,3)==3))~=1
+            y=[y;object_coord(find(object_coord(:,3)==3),4:6)+[sling_position(1:2),0]];
+            trajectory_sketch(y,m);
+            continue;
+        end;
+        if frame(30,44,2)>220
+            state=-1;
+            signal_tform=0;
+            signal_sling=0;
+            state_of_detection=[1,0,0,0,0,0];
+            coord_trajectory=[];
+            sling_coord=[];
+            sling_position=[];
+            m=eye(3);
+            state=-1;
+            continue;
+        end;
+    end;
+    
+    %white bird
+    if state == -5 
+        if frame(30,44,2)>220
+            state=-1;
+            signal_tform=0;
+            signal_sling=0;
+            state_of_detection=[1,0,0,0,0,0];
+            coord_trajectory=[];
+            sling_coord=[];
+            sling_position=[];
+            m=eye(3);
+            state=-1;
+            continue;
+        end;
+        if egg==0
+            if isempty(find(object_coord(:,3)==5))==1
+                continue;
+            else
+                object_coord(find(object_coord(:,3)==5),3)=-5;
+                continue;
+            end;
+        elseif egg==1
+            w=[w;object_coord(find(object_coord(:,3)==5),4:6)+[sling_position(1:2),0]];
+            trajectory_sketch(w,m);
+        end;
+    end;
+            
+end
