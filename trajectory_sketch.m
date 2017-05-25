@@ -16,7 +16,7 @@ if size(coord_store,1)>2
     pix_x = 0:480;
     pix_y = polyval(para_traj,pix_x);
     traj = plot(pix_x,pix_y,'k');
-    text(double(x(end)),double(y(end)),char(poly2sym(para_traj)));
+    text(double(x(end)),double(y(end)),char(vpa(poly2sym(para_traj),2)));
     
     %set(eqn,'String',char(poly2sym(para_traj)));
     drawnow;
