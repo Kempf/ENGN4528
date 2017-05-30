@@ -1,8 +1,4 @@
-%function [state_of_detection]=FSM(coord_state_type)
-%coord_state_type = n x 4 matrix, containing
-%    coordinate x, y / birds moving
-%   state(1=moving bird, 0 = steady object)
-%    type of objects:
+% type of objects:
 % 0--slingshot
 % 1--red
 % 2--blue
@@ -11,9 +7,8 @@
 % 5--white
 % 6--pig
 
-%state of FSM
-% 0:before bird flying, 1:after bird flying ,before bird collapse, 2:after
-% bird collaspe
+% state of FSM
+% 0:before bird flying, 1:after bird flying ,before bird collapse, 2:after bird collaspe
 close all
 clear all
 clc
@@ -27,17 +22,16 @@ set(fVid,'WindowButtonDownFcn',@(src,eventdata)run_pause(src,eventdata));
 
 if ismac
     video = VideoReader('Angry Birds In-game Trailer-quicktime.mov');
-    % Need this for me(Jae) to work on Macbook
     % Mac cannot read avi video
 else
     video = VideoReader('Angry Birds In-game Trailer.avi');
 end
 
 % video start and end
-loop = [12 60]; % whole video
+ loop = [12 60]; % whole video
 % loop = [14 20]; % red birds
 % loop = [22 28]; % blue birds
-% loop = [28 31]; % yellow birds
+% loop = [29 31]; % yellow birds
 % loop = [37 40]; % black birds
 % loop = [45 48]; % white bird
 % loop = [15 20]; % pigs 1
@@ -58,8 +52,6 @@ coord_trajectory=[];
 signal_tform=0;
 signal_sling=0;
 
-% don't use function names as variables!
-%text=[];
 point=[];
 traj=[];
 
@@ -80,13 +72,23 @@ w=[];
 
 egg=0;
 msg = '';
+frame_total = 0;
+frame_red_det = 0;
+
 
 while hasFrame(video)
+    
+    % frame_total = frame_total + 1;
+
     if ~ishghandle(fVid)
         break
     end
     
-    frame_prev =frame;
+    if video.CurrentTime >= loop(2)
+        video.CurrentTime = loop(1);
+    end
+    
+    frame_prev = frame;
     frame = readFrame(video);
     figure(1)
     frame_obj = image(frame);
@@ -96,19 +98,26 @@ while hasFrame(video)
         toc_1 = toc;
         time_per_frame = (toc_1 - toc_0)/10;
         frame_per_sec = 1/time_per_frame;
-        msg = sprintf('FPS: %.1f\n', frame_per_sec);
+        msg = sprintf('FPS: %.1f', frame_per_sec);
         figure(1);
         toc_0 = toc_1;
     end
-    text(0,0,msg);
+    
+    text(0,-10,msg);
     frame_count = frame_count + 1;
     
+    % Detection accuracy - debugging    
+    % msg_det = sprintf('Detection: %.1f%%', frame_red_det/frame_total*100);
+    % text(100,-10,msg_det);
     
     if isempty(object_coord)~=1
         move_bird=object_coord(find(object_coord(:,3) <0),:);
     end;
     
     object_coord=detection(state_of_detection,frame);
+    % if(red_det==1)
+        % frame_red_det = frame_red_det + 1;
+    % end
     sling_coord=object_coord(find(object_coord(:,3)==0),1:2);
     
     if signal_tform
@@ -116,11 +125,11 @@ while hasFrame(video)
             sling_position=object_coord(1,1:2);
             signal_sling=1;
         end;
-        %calculate tform matrix
+        % calculate tform matrix
         [scale_ratio,x_shift,y_shift,tform]=scale_shift(frame_prev,frame);
         if isempty(move_bird)~=1
             move_bird(4:6)=[move_bird(1:2),1]/m-[sling_position,0];
-            %plot parabolic
+            % plot parabolic
             coord_trajectory=[coord_trajectory;move_bird(4:6)+[sling_position(1:2),0]];
             [point,traj]=trajectory_sketch(coord_trajectory,m);
         end;
@@ -129,16 +138,11 @@ while hasFrame(video)
             for i = 1 : size(object_coord,1)
                 object_coord(i,4:6)=[object_coord(i,1:2),1]/m-[sling_position,0];
             end;
-            %display object coordinates
-            %???
-            %text=coordinate_display(object_coord);
-            
         end;
     end
     drawnow
     %sling is detected first time
     if state == -1 && isempty(sling_coord)~=1
-        %???
         pre_sling_coord=sling_coord;
         state=0;
         state_of_detection=[1,1,1,1,1,1];
@@ -301,26 +305,6 @@ while hasFrame(video)
         else
             continue;
         end;
-        %         if thre==1 || size(find(object_coord(:,3)==2),1)>1
-        %             thre=1;
-        %             if size(find(object_coord(:,3)==2),1)==3
-        %                 value=[object_coord(find(object_coord(:,3)==2),2)];
-        %                 b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
-        %                 b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
-        %                 b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
-        %                 trajectory_sketch(b_1,m);
-        %                 trajectory_sketch(b_2,m);
-        %                 trajectory_sketch(b_3,m);
-        %                 thre=1;
-        %                 continue;
-        %             else
-        %                 continue;
-        %             end;
-        %
-        %         elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
-        %             object_coord(find(object_coord(:,3)==2),3)=-2;
-        %             continue;
-        %         end;
         continue;
     end;
     if state == -3
