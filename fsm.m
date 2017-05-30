@@ -48,6 +48,7 @@ frame = readFrame(video);
 %       4--black
 %       5--white
 %       6--pig
+%       -(1~5) means that a specific type(1~5) bird is flying
 object_coord=[];
 
 %   transform matrix
@@ -71,7 +72,7 @@ signal_sling=0;
 %       State -2: Blue bird extra filtering (first time blue bird is not detected after launching)
 %       State -3: Yellow bird acceleration (first time yellow bird is not detected after launching)
 %       State -5: White bird extra filtering (first time white bird is not detected after launching)
-%       Back to State -1 condition: frame(30,44,2)>220 (a feature pixel value change during stage 
+%       Back to State -1 condition: frame(30,44,2)>220 (a feature pixel value change during stage
 state=-1;
 
 %   enable detection or not. sling/red/blue/yellow/black/white. Pig
@@ -184,7 +185,7 @@ while hasFrame(video)
     if state == 0
         %disable other detection function if slingshot is steady
         %start calculating tform matrix
-        if enable_state==0 && abs(sling_coord(1)-pre_sling_coord(1))<0.01
+        if enable_state==0 && isempty(pre_sling_coord)~=1 && isempty(sling_coord)~=1 && abs(sling_coord(1)-pre_sling_coord(1))<0.01
             state_of_detection=[0,0,0,0,0,0];
             signal_tform=1;
             for i = 1 : size(object_coord,1)
@@ -216,13 +217,13 @@ while hasFrame(video)
         end;
     end;
     
-    %after bird launch 
+    %after bird launch
     if state == 1
-        %disable slingshot detection if it is unnecessary
+        %disable slingshot detection if it is unnecessary (sling is not detected anymore)
         if state_of_detection(1)~=0 && isempty(object_coord(find(object_coord(:,3)<0)))
             state_of_detection(1)=0;
         end;
-        %calculate which one is the move bird in new frame
+        %calculate which one is the move bird in the new frame
         if size(object_coord,1) == 1
             object_coord(3)=-object_coord(i,3);
         elseif size(object_coord,1) > 1
@@ -230,7 +231,6 @@ while hasFrame(video)
                 if object_coord(i,4)+object_coord(i,5)-move_bird(4)-move_bird(5)<20 && object_coord(i,4)>move_bird(4) && object_coord(i,3)~=0
                     object_coord(i,3)=-object_coord(i,3);
                     no_move_bird=0;
-                    %%%collaspe
                     break;
                     
                 else
@@ -242,65 +242,61 @@ while hasFrame(video)
             continue;
         end;
         
-        % ???blue bird
+        %   special bird trajectory ploting and detection
+        
+        % if blue bird is flying but no move bird is detected(due to imperfection filter)
+        %   start extra filtering for blue bird
         if no_move_bird==1 && move_bird(3)==-2
             state=-2;
             hold off;
             continue;
         end;
         
+        % if yellow bird is flying but no move bird is detected(due to its acceleration feature)
+        %   start new trajectory ploting for yellow bird
         if no_move_bird==1 && move_bird(3)==-3
             state=-3;
             hold off;
             continue;
         end;
         
+        % if white bird is flying but no move bird is detected(imperfect filter)
+        %   start extra filtering for white bird
         if no_move_bird==1 && move_bird(3)==-5
             state=-5;
             hold off;
             continue;
         end;
+        % end special bird
         
-        %%%collapse???
+        % imperfect collapse detection(normally not reached but for red bird)
         if (abs(tform(3,1))<1 && (isempty(object_coord)==1 || no_move_bird==1)) || no_move_bird==1||(object_coord(find(object_coord(:,3)<0),4)-move_bird(4)<0.5)
             state=2;
             signal_tform=0;
             hold off;
             continue;
         end;
-        %%%special bird trajectory ploting and detection
         hold off;
         continue;
     end;
     
-    % stage change detection
-    %%%some problem with ending with only pig
-    if state== 2 && (isempty(object_coord)==1|| (isempty(find(object_coord(:,3)==1))|| ...
-            isempty(find(object_coord(:,3)==2))||...
-            isempty(find(object_coord(:,3)==3))||...
-            isempty(find(object_coord(:,3)==4))||...
-            isempty(find(object_coord(:,3)==5)))==0 )
+    % stage change
+    if frame(30,44,2)>220
         signal_tform=0;
         signal_sling=0;
-        state_of_detection=[0,0,0,0,0,0];
+        state_of_detection=[1,0,0,0,0,0];
         coord_trajectory=[];
         sling_coord=[];
         sling_position=[];
         m=eye(3);
-        state=3;
-        hold off;
-        continue;
-    end;
-    
-    if state==3 && isequal(frame,255*ones(320,480,3))
-        state_of_detection=[1,0,0,0,0,0];
         state=-1;
         hold off;
         continue;
     end;
     
-    %blue bird seperation
+    % blue bird seperation
     if state == -2
+        % extra detection for blue bird
         b_coord=im_blue(frame);
         if frame(30,44,2)>220
             signal_tform=0;
@@ -314,8 +310,10 @@ while hasFrame(video)
             hold off;
             continue;
         end;
+        % before seperation: 1 blue bird
         if size(b_coord,1)==1 && thre==0
             num=find(object_coord(:,3)==2);
+            % blue bird detected by normal detection
             if isempty(num)~=1
                 object_coord(num(1,1),1:3)=[b_coord(:)',-2];
                 if num>1
@@ -325,6 +323,8 @@ while hasFrame(video)
                 end;
                 hold off;
                 continue;
+                % blue bird not detected by normal detection:
+                %   add extra detection result.
             else
                 object_coord=[object_coord;[b_coord(:)',-2,0,0,1]];
                 hold off;
@@ -332,12 +332,16 @@ while hasFrame(video)
             end;
             
         end;
+        % after seperation: 3 blue birds
+        %   distinguish birds by y coordinates: max-1st,median-2nd,min-3rd.
         if size(b_coord,1)==3 && thre ==0
+            % hardcode boundary condition for seperated blue birds, can be removed.
             if max(b_coord(:,1))<209
                 value=b_coord(:,2);
                 b_1=[b_1;[b_coord(find(b_coord(:,2)==max(value)),:),1]/m];
                 b_2=[b_2;[b_coord(find(b_coord(:,2)==median(value)),:),1]/m];
                 b_3=[b_3;[b_coord(find(b_coord(:,2)==min(value)),:),1]/m];
+                % trajectory ploting
                 trajectory_sketch(b_1,m);
                 trajectory_sketch(b_2,m);
                 trajectory_sketch(b_3,m);
@@ -352,30 +356,9 @@ while hasFrame(video)
             hold off;
             continue;
         end;
-        %         if thre==1 || size(find(object_coord(:,3)==2),1)>1
-        %             thre=1;
-        %             if size(find(object_coord(:,3)==2),1)==3
-        %                 value=[object_coord(find(object_coord(:,3)==2),2)];
-        %                 b_1=[b_1;object_coord(find(object_coord(:,2)==max(value)),4:6)+[sling_position(1:2),0]];
-        %                 b_2=[b_1;object_coord(find(object_coord(:,2)==median(value)),4:6)+[sling_position(1:2),0]];
-        %                 b_3=[b_3;object_coord(find(object_coord(:,2)==min(value)),4:6)+[sling_position(1:2),0]];
-        %                 trajectory_sketch(b_1,m);
-        %                 trajectory_sketch(b_2,m);
-        %                 trajectory_sketch(b_3,m);
-        %                 thre=1;
-        %                 continue;
-        %             else
-        %                 continue;
-        %             end;
-        %
-        %         elseif size(find(object_coord(:,3)==2),1)==1 && thre==0
-        %             object_coord(find(object_coord(:,3)==2),3)=-2;
-        %             continue;
-        %         end;
-        hold off;
-        continue;
     end;
     
+    % yellow bird acceleration
     if state == -3
         if isempty(find(object_coord(:,3)==3))~=1
             y=[y;object_coord(find(object_coord(:,3)==3),4:6)+[sling_position(1:2),0]];
@@ -400,6 +383,7 @@ while hasFrame(video)
     
     %white bird
     if state == -5
+        % white bird extra detection
         w_coord=im_white(frame);
         if frame(30,44,2)>220
             state=-1;
@@ -414,21 +398,30 @@ while hasFrame(video)
             hold off;
             continue;
         end;
+        % haven't laid egg
         if egg==0
+            % two white areas are detected mean 1 bird and 1 egg:
+            %   after first disappearing no chance for detecting white birds not moving
             if size(w_coord,1)==2
                 egg=1;
                 hold off;
                 continue;
             elseif size(w_coord,1)==1
+                % add if not detected by normal detection
                 if isempty(find(object_coord(:,3)==5))==1
                     object_coord=[object_coord;w_coord,-5,0,0,1];
+                % manipulate type value
                 else
                     object_coord(find(object_coord(:,3)==5),3)=-5;
-                continue;
+                    hold off;
+                    continue;
                 end;
             end;
+        % after laying the egg
         elseif egg==1 && isempty(w_coord)~=1
+            % store white bird data
             w=[w;[w_coord(1,:),1]/m];
+            % plot new trajectory, after laying the egg
             trajectory_sketch(w,m);
             hold off;
             continue;

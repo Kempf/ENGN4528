@@ -3,7 +3,6 @@ function [point,traj] = trajectory_sketch(coord_store,M)
 point=[];
 traj=[];
 if size(coord_store,1)>2
-    %coord_store = [coord_store;ones(1,size(coord_store,2))]';
     coord = coord_store*M;
     
     x = coord(:,1);
@@ -18,13 +17,7 @@ if size(coord_store,1)>2
     traj = plot(pix_x,pix_y,'k');
     text(double(x(end))+5,double(y(end))+5,char(vpa(poly2sym(para_traj),2)));
     
-    %set(eqn,'String',char(poly2sym(para_traj)));
     drawnow;
-%     if sum(isnan(coord_store1)) ~= 0
-%         init_trajectory = para_traj;
-%         init_frame = frame_number;
-%         Vx = 0.5 *(coord(1,3)-coord(1,2)+coord(1,2)-coord(1,1));
-%     end
 end
 
 end
